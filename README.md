@@ -86,3 +86,6 @@ mkdir ~/.loganalyse/loganalyse.yaml
 # populate loganalyse.yaml with your configuration
 log-analyse
 ```
+
+-----
+
