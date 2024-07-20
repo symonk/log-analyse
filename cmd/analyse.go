@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"github.com/spf13/cobra"
+	"github.com/symonk/log-analyse/internal/files"
 )
 
 // analyseCmd represents the analyse command
@@ -10,10 +11,13 @@ var analyseCmd = &cobra.Command{
 	Short: "Analyses log fails based on the configuration",
 	Long:  `Implement`,
 	Run: func(cmd *cobra.Command, args []string) {
-		// TODO: pull out the locations from the config
-
-		// TODO: flatten down to single files in terms of thresholding
-		// TODO: because folders can be set, or explicit files
+		// instantiate something that can locate files on disk
+		locator := files.NewFileLocator()
+		condenser := files.NewCondenser(locator)
+		// flatten the config to individual files
+		// requires alot of testing
+		flattened, err := condenser.Flatten(cfg.Files)
+		_, _ = flattened, err
 
 		// TODO: check files exist, do what we can or add a strict flag
 
