@@ -5,6 +5,7 @@ package cmd
 
 import (
 	"fmt"
+	"log/slog"
 	"os"
 
 	"github.com/spf13/cobra"
@@ -57,13 +58,12 @@ func initConfig() {
 	if err := viper.ReadInConfig(); err == nil {
 		fmt.Fprintln(os.Stderr, "Using config file:", viper.ConfigFileUsed())
 		if err := viper.Unmarshal(&cfg); err != nil {
-			fmt.Fprintf(os.Stderr, "yaml file is not valid config: %s because %s", viper.ConfigFileUsed(), err)
+			slog.Error("configuration file was not valid", slog.String("config", viper.ConfigFileUsed()), slog.Any("error", err))
 			os.Exit(2)
 		}
 	} else {
-		fmt.Fprintln(os.Stderr, "no config file could be found.")
+		slog.Error("no config file could be found")
 		os.Exit(1)
 	}
-	fmt.Println("Successfully built a config!")
-
+	slog.Info("Successfully built a config")
 }
