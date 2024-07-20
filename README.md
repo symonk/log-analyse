@@ -18,7 +18,8 @@ The aim of `log-analyse` is to allow teams to store an array of patterns that ma
 of interest in an assortment of log files and be notified when various thresholds around
 those patterns are met.
 
-> [!INFO]
+
+> [!IMPORTANT]
 > log-analyse will only ever need read permissions on the files it is monitoring
 
 -----
