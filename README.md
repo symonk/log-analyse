@@ -39,6 +39,7 @@ files:
       patterns:
         - ".*FATAL.*"
         - ".*payment failed.*"
+      notify: "email"
   # An explicit log file
   - loc: "~/folder2/explicit.log"
     threshold:
@@ -46,5 +47,14 @@ files:
       period: 1m
     patterns:
       - ".*disk space low.*"
+    notify: "slack"
 
+## TBD
+integrations:
+    slack:
+        webhook: ""
+    email:
+        to:
+            - "alerts@bar.com"
+            - "admin@bar.com"
 ```
