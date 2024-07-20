@@ -18,7 +18,19 @@ The aim of `log-analyse` is to allow teams to store an array of patterns that ma
 of interest in an assortment of log files and be notified when various thresholds around
 those patterns are met.
 
+> [!INFO]
+> log-analyse will only ever need read permissions on the files it is monitoring
+
 -----
+
+## Planned Features
+
+`log-analyse` hops to support the following:
+
+ * tail (daemon) mode that is rotation aware etc
+ * notification integrations for alerting
+ * highly performant scanning of log files
+
 
 ## Quick start
 
@@ -57,4 +69,18 @@ integrations:
         to:
             - "alerts@bar.com"
             - "admin@bar.com"
+```
+
+-----
+
+## Running Log-analyse
+
+Running log analyse on your system is as easy as:
+
+```bash
+# ensure to use the minimum permissions necessary for the below:
+go install github.com/symonk/log-analyse
+mkdir ~/.loganalyse/loganalyse.yaml
+# populate loganalyse.yaml with your configuration
+log-analyse
 ```
