@@ -28,6 +28,7 @@ an explicit absolute path to a yaml file via the `-c` file.
 An example of the current configuration (changing rapidly):
 
 ```yaml
+---
 files:
   # A glob based folder lookup
   - loc: "~/folder1"
@@ -35,10 +36,15 @@ files:
       glob: "*.log"
       times: 5
       period: 30s
-
+      patterns:
+        - ".*FATAL.*"
+        - ".*payment failed.*"
   # An explicit log file
   - loc: "~/folder2/explicit.log"
     threshold:
       times: 1
       period: 1m
+    patterns:
+      - ".*disk space low.*"
+
 ```
