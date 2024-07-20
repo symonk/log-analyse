@@ -22,8 +22,8 @@ files:
 ## TBD
 integrations:
     slack:
-        webhook: ""
+      webhook: ""
     email:
-        to:
-            - "alerts@bar.com"
-            - "admin@bar.com"
+      to:
+        - "alerts@bar.com"
+        - "admin@bar.com"

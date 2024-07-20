@@ -9,9 +9,12 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"github.com/symonk/log-analyse/internal/config"
 )
 
 var cfgFile string
+
+var cfg *config.Config
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
@@ -40,20 +43,27 @@ func initConfig() {
 		// Use config file from the flag.
 		viper.SetConfigFile(cfgFile)
 	} else {
-		// Find home directory.
-		home, err := os.UserHomeDir()
+		baseDir, err := config.ConfigDefaultFolder()
 		cobra.CheckErr(err)
 
-		// Search config in home directory with name ".log-analyse" (without extension).
-		viper.AddConfigPath(home)
+		viper.AddConfigPath(baseDir)
 		viper.SetConfigType("yaml")
 		viper.SetConfigName(".log-analyse")
 	}
 
-	viper.AutomaticEnv() // read in environment variables that match
+	// viper.AutomaticEnv()
 
 	// If a config file is found, read it in.
 	if err := viper.ReadInConfig(); err == nil {
 		fmt.Fprintln(os.Stderr, "Using config file:", viper.ConfigFileUsed())
+		if err := viper.Unmarshal(&cfg); err != nil {
+			fmt.Fprintf(os.Stderr, "yaml file is not valid config: %s because %s", viper.ConfigFileUsed(), err)
+			os.Exit(2)
+		}
+	} else {
+		fmt.Fprintln(os.Stderr, "no config file could be found.")
+		os.Exit(1)
 	}
+	fmt.Println("Successfully built a config!")
+
 }
