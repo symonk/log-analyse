@@ -19,3 +19,26 @@ of interest in an assortment of log files and be notified when various threshold
 those patterns are met.
 
 -----
+
+## Quick start
+
+`log-analyse` by default will look for a configuration file in `~/.loganalyse/loganalyse.yaml`, however you can provide
+an explicit absolute path to a yaml file via the `-c` file.
+
+An example of the current configuration (changing rapidly):
+
+```yaml
+files:
+  # A glob based folder lookup
+  - loc: "~/folder1"
+    threshold:
+      glob: "*.log"
+      times: 5
+      period: 30s
+
+  # An explicit log file
+  - loc: "~/folder2/explicit.log"
+    threshold:
+      times: 1
+      period: 1m
+```
