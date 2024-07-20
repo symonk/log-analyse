@@ -5,13 +5,19 @@ package config
 // relatively basic, enhanced configurations will be
 // enabled in future.
 type Config struct {
-	checks []Threshold
+	Files        []FileConfig
+	Integrations string
 }
 
-// Threshold encapsualates the threshold for pattern
+// FileConfig encapsualates the threshold for pattern
 // matches before an alert or action is triggered.
-type Threshold struct {
+type FileConfig struct {
 	glob   string `yaml:"glob"`
 	times  int    `yaml:"times"`
 	period int    `yaml:"period"`
+}
+
+// Integration is an implementation of an alerting
+// mechanism
+type Integration struct {
 }

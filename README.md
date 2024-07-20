@@ -26,10 +26,11 @@ those patterns are met.
 
 ## Planned Features
 
-`log-analyse` hops to support the following:
+`log-analyse` aims to support the following:
 
- * tail (daemon) mode that is rotation aware etc
- * notification integrations for alerting
+ * tail mode - live monitoring of log files with rotation support etc.
+ * analyse mode - retrospectively analyse log files.
+ * notification integrations for alerting.
  * highly performant scanning of log files
 
 
