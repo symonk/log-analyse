@@ -1,12 +1,10 @@
 package cmd
 
 import (
-	"bufio"
 	"log/slog"
-	"os"
-	"regexp"
 
 	"github.com/spf13/cobra"
+	"github.com/symonk/log-analyse/internal/analyser"
 	"github.com/symonk/log-analyse/internal/files"
 )
 
@@ -24,31 +22,9 @@ var analyseCmd = &cobra.Command{
 		if err != nil {
 			slog.Error("unable to parse files", slog.Any("error", err))
 		}
-		// TODO: check files exist, do what we can or add a strict flag
-
-		// TODO: Asynchronously process all files, all lines scaling out massively
-		// TODO: matching patterns in the config file
-		for _, f := range flattened {
-			opened, err := os.Open(f.Path)
-			if err != nil {
-				panic(err)
-			}
-			// TODO: don't defer in the loop!
-			defer opened.Close()
-
-			scanner := bufio.NewScanner(opened)
-			for scanner.Scan() {
-				line := scanner.Text()
-				for _, pattern := range f.Threshold.Patterns {
-					ok, err := regexp.Match(pattern, []byte(line))
-					if err != nil {
-						slog.Error("error matching line with pattern", slog.String("line", line), slog.String("pattern", pattern))
-					}
-					if ok {
-						slog.Info("matched", slog.String("line", line), slog.String("pattern", pattern))
-					}
-				}
-			}
+		fAnalyser := analyser.NewFileAnalyser(flattened, analyser.WithBounds(0))
+		if err := fAnalyser.Analyse(); err != nil {
+			slog.Error("error analysing", slog.Any("error", err))
 		}
 
 		// TODO: Collect matches for each of the thresholds

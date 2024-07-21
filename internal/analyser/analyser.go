@@ -1,7 +1,12 @@
 package analyser
 
 import (
-	"github.com/symonk/log-analyse/internal/config"
+	"bufio"
+	"log/slog"
+	"os"
+	"regexp"
+
+	"github.com/symonk/log-analyse/internal/files"
 )
 
 // Option is a functional option for the Analyser
@@ -39,16 +44,46 @@ type Analyser interface {
 // Analysrer is not a live tailer, but a retrospective log inspector
 // of sorts.
 type FileAnalyser struct {
-	fileConfigs []config.FileConfig
-	strategy    string
-	maxBound    int
+	flattenedFiles []files.IndividualFile
+	strategy       string
+	maxBound       int
 }
 
 // NewFileAnalyser returns a new file analyser.
-func NewFileAnalyser(fileConfigs []config.FileConfig, options ...Option) *FileAnalyser {
-	analyser := &FileAnalyser{fileConfigs: fileConfigs}
+func NewFileAnalyser(fileConfigs []files.IndividualFile, options ...Option) *FileAnalyser {
+	analyser := &FileAnalyser{flattenedFiles: fileConfigs}
 	for _, option := range options {
 		option(analyser)
 	}
 	return analyser
+}
+
+func (f *FileAnalyser) Analyse() error {
+	// TODO: check files exist, do what we can or add a strict flag
+
+	// TODO: Asynchronously process all files, all lines scaling out massively
+	// TODO: matching patterns in the config file
+	for _, f := range f.flattenedFiles {
+		opened, err := os.Open(f.Path)
+		if err != nil {
+			panic(err)
+		}
+		// TODO: don't defer in the loop!
+		defer opened.Close()
+
+		scanner := bufio.NewScanner(opened)
+		for scanner.Scan() {
+			line := scanner.Text()
+			for _, pattern := range f.Threshold.Patterns {
+				ok, err := regexp.Match(pattern, []byte(line))
+				if err != nil {
+					slog.Error("error matching line with pattern", slog.String("line", line), slog.String("pattern", pattern))
+				}
+				if ok {
+					slog.Info("matched", slog.String("line", line), slog.String("pattern", pattern))
+				}
+			}
+		}
+	}
+	return nil
 }
