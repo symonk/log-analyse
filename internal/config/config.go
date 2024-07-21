@@ -9,12 +9,30 @@ type Config struct {
 	Integrations []Integration `yaml:"integrations, omitempty"`
 }
 
+// Globs returns the configured glob patterns defined in
+// the configuration file.
+func (c Config) Globs() []string {
+	globs := make([]string, 0, len(c.Files))
+	for _, file := range c.Files {
+		globs = append(globs, file.Glob)
+	}
+	return globs
+}
+
 // FileConfig encapsualates the threshold for pattern
 // matches before an alert or action is triggered.
 type FileConfig struct {
-	Glob   string `yaml:"glob"`
-	Times  int    `yaml:"times"`
-	Period int    `yaml:"period"`
+	Glob        string      `yaml:"glob" validate:"required"`
+	Threshold   Threshold   `yaml:"Threshold" validate:"required"`
+	Integration Integration `yaml:"Integration, omitempty"`
+}
+
+// Threshold encapsulates the configuration for each defined
+// glob pattern in the config
+type Threshold struct {
+	Hits   int    `yaml:"hits"`
+	Period string `yaml:"period"`
+	Notify string `yaml:"notify, omitempty"`
 }
 
 // Integration is an implementation of an alerting

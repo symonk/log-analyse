@@ -24,13 +24,13 @@ func WithStrict(strict bool) Option {
 // provides a flat set of files and config mapping that
 // goes with each one of them.
 type Condenser struct {
-	locator Locator
+	locator Collector
 	strict  bool
 }
 
 // NewCondenser returns a new instance (ptr) of
 // Condenser
-func NewCondenser(locator Locator, options ...Option) *Condenser {
+func NewCondenser(locator Collector, options ...Option) *Condenser {
 	c := &Condenser{}
 	for _, opt := range options {
 		opt(c)

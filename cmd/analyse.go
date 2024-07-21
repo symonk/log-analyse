@@ -1,6 +1,8 @@
 package cmd
 
 import (
+	"log/slog"
+
 	"github.com/spf13/cobra"
 	"github.com/symonk/log-analyse/internal/files"
 )
@@ -11,6 +13,7 @@ var analyseCmd = &cobra.Command{
 	Short: "Analyses log fails based on the configuration",
 	Long:  `Implement`,
 	Run: func(cmd *cobra.Command, args []string) {
+		slog.Info("Detected globs", slog.Any("globs", cfg.Globs()))
 		// instantiate something that can locate files on disk
 		locator := files.NewFileLocator()
 		condenser := files.NewCondenser(locator)

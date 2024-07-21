@@ -1,16 +1,16 @@
 package files
 
-type Locator interface {
+type Collector interface {
 	Locate() error
 }
 
-type FileLocator struct {
+type FileCollector struct {
 }
 
-func NewFileLocator() *FileLocator {
-	return &FileLocator{}
+func NewFileLocator() *FileCollector {
+	return &FileCollector{}
 }
 
-func (f FileLocator) Locate() error {
+func (f FileCollector) Locate() error {
 	return nil
 }
