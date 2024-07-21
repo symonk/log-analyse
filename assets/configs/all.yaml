@@ -1,19 +1,18 @@
 ---
 files:
   # A glob based folder lookup
-  - loc: "~/folder1"
+  - glob: "~/logs/*.txt"
     threshold:
-      glob: "*.log"
-      times: 5
+      hits: 5
       period: 30s
       patterns:
         - ".*FATAL.*"
         - ".*payment failed.*"
       notify: "email"
   # An explicit log file
-  - loc: "~/folder2/explicit.log"
+  - glob: "~/logs/foo.log"
     threshold:
-      times: 1
+      hits: 1
       period: 1m
     patterns:
       - ".*disk space low.*"
@@ -22,8 +21,8 @@ files:
 ## TBD
 integrations:
     slack:
-      webhook: ""
+        webhook: ""
     email:
-      to:
-        - "alerts@bar.com"
-        - "admin@bar.com"
+        to:
+            - "alerts@bar.com"
+            - "admin@bar.com"

@@ -1,18 +1,39 @@
 package config
 
 import (
-	"path"
-	"path/filepath"
-	"runtime"
+	"bytes"
 	"testing"
 
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )
 
+var basic = []byte(`
+---
+files:
+  # A glob based folder lookup
+  - glob: "~/logs/*.txt"
+    threshold:
+      hits: 5
+      period: 30s
+      patterns:
+        - ".*FATAL.*"
+        - ".*payment failed.*"
+      notify: "email"
+  # An explicit log file
+  - glob: "~/logs/foo.log"
+    threshold:
+      hits: 1
+      period: 1m
+    patterns:
+      - ".*disk space low.*"
+    notify: "slack"
+
+`)
+
 func TestCanUnmarshalConfigSuccessfully(t *testing.T) {
-	config := loadConfigFile(t, "basic.yaml")
-	assert.Len(t, config.Files, 2)
+	c := loadConfigFile(t, basic)
+	assert.Len(t, c.Files, 2)
 }
 
 func TestReturnGlobs(t *testing.T) {
@@ -21,15 +42,12 @@ func TestReturnGlobs(t *testing.T) {
 	assert.Equal(t, c.Globs(), []string{"foo", "bar", "baz"})
 }
 
-// loadConfig loads a yaml config file on disk from the /assets/configs
-// directory and unmarshals it through viper to return a Config instance
-// for testing.
-func loadConfigFile(t *testing.T, name string) *Config {
+// loadConfigFile streams a byte slice into a viper config and
+// unmarshals it into the Config object.
+func loadConfigFile(t *testing.T, b []byte) *Config {
 	var c *Config
-	_, b, _, _ := runtime.Caller(0)
-	basepath := filepath.Dir(b)
-	p := path.Join(basepath, "../..", "assets", "configs", name)
-	viper.SetConfigFile(p)
+	viper.SetConfigType("yaml")
+	viper.ReadConfig(bytes.NewBuffer(b))
 	if err := viper.Unmarshal(&c); err != nil {
 		t.Fatal("could not load config")
 	}
