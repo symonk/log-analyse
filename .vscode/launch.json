@@ -9,11 +9,9 @@
             "type": "go",
             "request": "launch",
             "mode": "auto",
-            "program": "${workspaceFolder}/main.go",
+            "program": "${workspaceFolder}",
             "args": [
                 "analyse",
-                "--config",
-                "${workspaceFolder}/assets/configs/all.yaml"
         ]
         }
     ]

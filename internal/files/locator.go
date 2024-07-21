@@ -24,7 +24,7 @@ type FileCollector struct {
 }
 
 func NewFileLocator(cfg *config.Config) *FileCollector {
-	return &FileCollector{}
+	return &FileCollector{cfg: cfg}
 }
 
 func (f FileCollector) Locate() ([]IndividualFile, error) {
