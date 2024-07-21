@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"log/slog"
 	"regexp"
+	"sync"
 
 	"github.com/symonk/log-analyse/internal/files"
 )
@@ -73,20 +74,28 @@ func (f *FileAnalyser) Analyse() error {
 		// TODO: no good!
 		panic(err)
 	}
+
+	var wg sync.WaitGroup
+	wg.Add(len(loadedFiles))
 	for _, f := range loadedFiles {
-		scanner := bufio.NewScanner(f.File)
-		for scanner.Scan() {
-			line := scanner.Text()
-			for _, pattern := range f.Threshold.Patterns {
-				ok, err := regexp.Match(pattern, []byte(line))
-				if err != nil {
-					slog.Error("error matching line with pattern", slog.String("line", line), slog.String("pattern", pattern))
-				}
-				if ok {
-					slog.Info("matched", slog.String("line", line), slog.String("pattern", pattern))
+		go func() {
+			defer wg.Done()
+			defer f.File.Close()
+			scanner := bufio.NewScanner(f.File)
+			for scanner.Scan() {
+				line := scanner.Text()
+				for _, pattern := range f.Threshold.Patterns {
+					ok, err := regexp.Match(pattern, []byte(line))
+					if err != nil {
+						slog.Error("error matching line with pattern", slog.String("line", line), slog.String("pattern", pattern))
+					}
+					if ok {
+						slog.Info("matched", slog.String("line", line), slog.String("pattern", pattern))
+					}
 				}
 			}
-		}
+		}()
 	}
+	wg.Wait()
 	return nil
 }

@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+# This script will eventually be used to generate large files on disk for testing
+# bigger files without storing them in source control.
+
