@@ -9,6 +9,9 @@ import (
 	"github.com/symonk/log-analyse/internal/files"
 )
 
+// Result is a matched result
+type Result string
+
 // Option is a functional option for the Analyser
 type Option func(a *FileAnalyser)
 
@@ -32,7 +35,7 @@ func WithBounds(bound int) Option {
 // Analyser is the interface for something that can analyse
 // patterns against files on disk
 type Analyser interface {
-	Analyse() error
+	Analyse() (chan<- Result, error)
 }
 
 // FileAnalyser accepts file paths with their paired thresholds
@@ -61,19 +64,15 @@ func NewFileAnalyser(individualFiles []files.IndividualFile, options ...Option) 
 
 // Analyse performs retrospect log file analysis
 // TODO: doing more than 1 thing
-// TODO: abstract file loading
-// TODO: abstract file scanning
 // TODO: optimise patterns i.e reuse compiled
-func (f *FileAnalyser) Analyse() error {
-	// TODO: check files exist, do what we can or add a strict flag
-
-	// TODO: Asynchronously process all files, all lines scaling out massively
-	// TODO: matching patterns in the config file
+func (f *FileAnalyser) Analyse() (<-chan Result, error) {
 	loadedFiles, err := f.loader.Load()
 	if err != nil {
 		// TODO: no good!
 		panic(err)
 	}
+
+	results := make(chan Result)
 
 	var wg sync.WaitGroup
 	wg.Add(len(loadedFiles))
@@ -91,11 +90,15 @@ func (f *FileAnalyser) Analyse() error {
 					}
 					if ok {
 						slog.Info("matched", slog.String("line", line), slog.String("pattern", pattern))
+						results <- Result(line)
 					}
 				}
 			}
 		}()
 	}
-	wg.Wait()
-	return nil
+	go func() {
+		wg.Wait()
+		close(results)
+	}()
+	return results, nil
 }

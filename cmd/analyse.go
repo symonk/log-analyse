@@ -23,8 +23,12 @@ var analyseCmd = &cobra.Command{
 			slog.Error("unable to parse files", slog.Any("error", err))
 		}
 		fAnalyser := analyser.NewFileAnalyser(flattened, analyser.WithBounds(0))
-		if err := fAnalyser.Analyse(); err != nil {
+		matches, err := fAnalyser.Analyse()
+		if err != nil {
 			slog.Error("error analysing", slog.Any("error", err))
+		}
+		for match := range matches {
+			slog.Info("Match", slog.Any("match", match))
 		}
 
 		// TODO: Collect matches for each of the thresholds
