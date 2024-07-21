@@ -24,7 +24,6 @@ var analyseCmd = &cobra.Command{
 		if err != nil {
 			slog.Error("unable to parse files", slog.Any("error", err))
 		}
-		slog.Info("files flattened", slog.Any("files", flattened))
 		// TODO: check files exist, do what we can or add a strict flag
 
 		// TODO: Asynchronously process all files, all lines scaling out massively

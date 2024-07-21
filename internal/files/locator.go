@@ -1,6 +1,7 @@
 package files
 
 import (
+	"log/slog"
 	"path/filepath"
 
 	"github.com/symonk/log-analyse/internal/config"
@@ -34,6 +35,10 @@ func (f FileCollector) Locate() ([]IndividualFile, error) {
 		if err != nil {
 			return files, err
 		}
+		if len(flattened) == 0 {
+			slog.Warn("no files for glob", "glob", file.Glob)
+			return files, nil
+		}
 		for _, f := range flattened {
 			files = append(files, IndividualFile{Path: f, Threshold: file.Threshold})
 		}
@@ -45,6 +50,8 @@ func (f FileCollector) Locate() ([]IndividualFile, error) {
 	return files, nil
 }
 
+// filesFromGlob takes a glob pattern and returns the slice of file paths
+// matching that glob.
 func (f FileCollector) filesFromGlob(glob string) ([]string, error) {
 	return filepath.Glob(glob)
 }
