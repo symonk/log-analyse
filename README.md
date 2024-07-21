@@ -65,15 +65,6 @@ files:
     patterns:
       - ".*disk space low.*"
     notify: "slack"
-
-## TBD
-integrations:
-    slack:
-        webhook: ""
-    email:
-        to:
-            - "alerts@bar.com"
-            - "admin@bar.com"
 ```
 
 -----
