@@ -2,9 +2,9 @@ package cmd
 
 import (
 	"bufio"
-	"fmt"
 	"log/slog"
 	"os"
+	"regexp"
 
 	"github.com/spf13/cobra"
 	"github.com/symonk/log-analyse/internal/files"
@@ -38,7 +38,16 @@ var analyseCmd = &cobra.Command{
 
 			scanner := bufio.NewScanner(opened)
 			for scanner.Scan() {
-				fmt.Println(scanner.Text())
+				line := scanner.Text()
+				for _, pattern := range f.Threshold.Patterns {
+					ok, err := regexp.Match(pattern, []byte(line))
+					if err != nil {
+						slog.Error("error matching line with pattern", slog.String("line", line), slog.String("pattern", pattern))
+					}
+					if ok {
+						slog.Info("matched", slog.String("line", line), slog.String("pattern", pattern))
+					}
+				}
 			}
 		}
 

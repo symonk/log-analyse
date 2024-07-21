@@ -30,9 +30,10 @@ type FileConfig struct {
 // Threshold encapsulates the configuration for each defined
 // glob pattern in the config
 type Threshold struct {
-	Hits   int    `yaml:"hits"`
-	Period string `yaml:"period"`
-	Notify string `yaml:"notify, omitempty"`
+	Hits     int      `yaml:"hits"`
+	Period   string   `yaml:"period"`
+	Patterns []string `yaml:"patterns"`
+	Notify   string   `yaml:"notify, omitempty"`
 }
 
 // Integration is an implementation of an alerting
