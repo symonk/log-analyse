@@ -58,6 +58,11 @@ func NewFileAnalyser(fileConfigs []files.IndividualFile, options ...Option) *Fil
 	return analyser
 }
 
+// Analyse performs retrospect log file analysis
+// TODO: doing more than 1 thing
+// TODO: abstract file loading
+// TODO: abstract file scanning
+// TODO: optimise patterns i.e reuse compiled
 func (f *FileAnalyser) Analyse() error {
 	// TODO: check files exist, do what we can or add a strict flag
 
