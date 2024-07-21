@@ -50,7 +50,7 @@ files:
   # A glob based folder lookup
   - glob: "~/logs/*.txt"
     threshold:
-      times: 5
+      hits: 5
       period: 30s
       patterns:
         - ".*FATAL.*"
@@ -59,7 +59,7 @@ files:
   # An explicit log file
   - glob: "~/logs/foo.log"
     threshold:
-      times: 1
+      hits: 1
       period: 1m
     patterns:
       - ".*disk space low.*"

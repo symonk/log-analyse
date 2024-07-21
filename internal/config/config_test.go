@@ -32,7 +32,8 @@ files:
 `)
 
 func TestCanUnmarshalConfigSuccessfully(t *testing.T) {
-	c := loadConfigFile(t, basic)
+	c, err := loadConfigFile(t, basic)
+	assert.Nil(t, err)
 	assert.Len(t, c.Files, 2)
 }
 
@@ -44,12 +45,10 @@ func TestReturnGlobs(t *testing.T) {
 
 // loadConfigFile streams a byte slice into a viper config and
 // unmarshals it into the Config object.
-func loadConfigFile(t *testing.T, b []byte) *Config {
+func loadConfigFile(t *testing.T, b []byte) (*Config, error) {
 	var c *Config
 	viper.SetConfigType("yaml")
 	viper.ReadConfig(bytes.NewBuffer(b))
-	if err := viper.Unmarshal(&c); err != nil {
-		t.Fatal("could not load config")
-	}
-	return c
+	err := viper.Unmarshal(&c)
+	return c, err
 }
