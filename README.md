@@ -34,7 +34,8 @@ security utility.
  * tail mode - live monitoring of log files with rotation support etc.
  * analyse mode - retrospectively analyse log files.
  * notification integrations for alerting.
- * highly performant scanning of log files
+ * highly performant (and configurable) scanning of log files.
+ * extensible plugin system to allow user defined behaviour on alerting.
 
 
 ## Quick start
