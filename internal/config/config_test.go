@@ -30,10 +30,29 @@ files:
 
 `)
 
+var single = []byte(`
+---
+files:
+  - glob: "~/logs/*.txt"
+    threshold:
+      hits: 5
+      period: 30s
+      patterns:
+        - ".*FATAL.*"
+        - ".*payment failed.*"
+      notify: "email"
+`)
+
 func TestCanUnmarshalConfigSuccessfully(t *testing.T) {
 	c, err := loadConfigFile(basic)
 	assert.Nil(t, err)
 	assert.Len(t, c.Files, 2)
+}
+
+func TestCanLoadSingleConfigBlock(t *testing.T) {
+	c, err := loadConfigFile(single)
+	assert.Nil(t, err)
+	assert.Len(t, c.Files, 1)
 }
 
 func TestReturnGlobs(t *testing.T) {

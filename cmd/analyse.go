@@ -1,7 +1,10 @@
 package cmd
 
 import (
+	"bufio"
+	"fmt"
 	"log/slog"
+	"os"
 
 	"github.com/spf13/cobra"
 	"github.com/symonk/log-analyse/internal/files"
@@ -19,13 +22,26 @@ var analyseCmd = &cobra.Command{
 		locator := files.NewFileLocator(cfg)
 		flattened, err := locator.Locate()
 		if err != nil {
-			slog.Error("unable to parse files", err)
+			slog.Error("unable to parse files", slog.Any("error", err))
 		}
 		slog.Info("files flattened", slog.Any("files", flattened))
 		// TODO: check files exist, do what we can or add a strict flag
 
 		// TODO: Asynchronously process all files, all lines scaling out massively
 		// TODO: matching patterns in the config file
+		for _, f := range flattened {
+			opened, err := os.Open(f.Path)
+			if err != nil {
+				panic(err)
+			}
+			// TODO: don't defer in the loop!
+			defer opened.Close()
+
+			scanner := bufio.NewScanner(opened)
+			for scanner.Scan() {
+				fmt.Println(scanner.Text())
+			}
+		}
 
 		// TODO: Collect matches for each of the thresholds
 

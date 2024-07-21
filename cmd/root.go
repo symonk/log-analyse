@@ -49,7 +49,7 @@ func initConfig() {
 
 		viper.AddConfigPath(baseDir)
 		viper.SetConfigType("yaml")
-		viper.SetConfigName(".log-analyse")
+		viper.SetConfigName("log-analyse")
 	}
 
 	// viper.AutomaticEnv()
@@ -62,7 +62,7 @@ func initConfig() {
 			os.Exit(2)
 		}
 	} else {
-		slog.Error("no config file could be found")
+		slog.Error("no config file could be found: ", slog.Any("error", err))
 		os.Exit(1)
 	}
 	slog.Info("Successfully built a config")

@@ -7,8 +7,8 @@ import (
 )
 
 type IndividualFile struct {
-	path      string
-	threshold config.Threshold
+	Path      string
+	Threshold config.Threshold
 }
 
 type Collector interface {
@@ -35,7 +35,7 @@ func (f FileCollector) Locate() ([]IndividualFile, error) {
 			return files, err
 		}
 		for _, f := range flattened {
-			files = append(files, IndividualFile{path: f, threshold: file.Threshold})
+			files = append(files, IndividualFile{Path: f, Threshold: file.Threshold})
 		}
 	}
 	// TODO: Handle duplicate paths here; multiple config blocks can overlap
