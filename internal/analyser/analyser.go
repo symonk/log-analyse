@@ -3,7 +3,6 @@ package analyser
 import (
 	"bufio"
 	"log/slog"
-	"os"
 	"regexp"
 
 	"github.com/symonk/log-analyse/internal/files"
@@ -47,11 +46,12 @@ type FileAnalyser struct {
 	flattenedFiles []files.IndividualFile
 	strategy       string
 	maxBound       int
+	loader         *FileLoader
 }
 
 // NewFileAnalyser returns a new file analyser.
-func NewFileAnalyser(fileConfigs []files.IndividualFile, options ...Option) *FileAnalyser {
-	analyser := &FileAnalyser{flattenedFiles: fileConfigs}
+func NewFileAnalyser(individualFiles []files.IndividualFile, options ...Option) *FileAnalyser {
+	analyser := &FileAnalyser{flattenedFiles: individualFiles, loader: &FileLoader{files: individualFiles}}
 	for _, option := range options {
 		option(analyser)
 	}
@@ -68,15 +68,13 @@ func (f *FileAnalyser) Analyse() error {
 
 	// TODO: Asynchronously process all files, all lines scaling out massively
 	// TODO: matching patterns in the config file
-	for _, f := range f.flattenedFiles {
-		opened, err := os.Open(f.Path)
-		if err != nil {
-			panic(err)
-		}
-		// TODO: don't defer in the loop!
-		defer opened.Close()
-
-		scanner := bufio.NewScanner(opened)
+	loadedFiles, err := f.loader.Load()
+	if err != nil {
+		// TODO: no good!
+		panic(err)
+	}
+	for _, f := range loadedFiles {
+		scanner := bufio.NewScanner(f.File)
 		for scanner.Scan() {
 			line := scanner.Text()
 			for _, pattern := range f.Threshold.Patterns {
