@@ -48,9 +48,8 @@ An example of the current configuration (changing rapidly):
 ---
 files:
   # A glob based folder lookup
-  - loc: "~/folder1"
+  - glob: "~/logs/*.txt"
     threshold:
-      glob: "*.log"
       times: 5
       period: 30s
       patterns:
@@ -58,7 +57,7 @@ files:
         - ".*payment failed.*"
       notify: "email"
   # An explicit log file
-  - loc: "~/folder2/explicit.log"
+  - glob: "~/logs/foo.log"
     threshold:
       times: 1
       period: 1m
