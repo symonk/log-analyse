@@ -8,6 +8,7 @@ import (
 )
 
 // analyseCmd represents the analyse command
+// TODO: This implementation is very WIP and is a piece of rubbish atm.
 var analyseCmd = &cobra.Command{
 	Use:   "analyse",
 	Short: "Analyses log fails based on the configuration",
@@ -15,13 +16,12 @@ var analyseCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		slog.Info("Detected globs", slog.Any("globs", cfg.Globs()))
 		// instantiate something that can locate files on disk
-		locator := files.NewFileLocator()
-		condenser := files.NewCondenser(locator)
-		// flatten the config to individual files
-		// requires alot of testing
-		flattened, err := condenser.Flatten(cfg.Files)
-		_, _ = flattened, err
-
+		locator := files.NewFileLocator(cfg)
+		flattened, err := locator.Locate()
+		if err != nil {
+			slog.Error("unable to parse files", err)
+		}
+		slog.Info("files flattened", slog.Any("files", flattened))
 		// TODO: check files exist, do what we can or add a strict flag
 
 		// TODO: Asynchronously process all files, all lines scaling out massively

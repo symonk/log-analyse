@@ -1,7 +1,18 @@
 package files
 
+import (
+	"path/filepath"
+
+	"github.com/symonk/log-analyse/internal/config"
+)
+
+type IndividualFile struct {
+	path      string
+	threshold config.Threshold
+}
+
 type Collector interface {
-	Locate() error
+	Locate() ([]IndividualFile, error)
 }
 
 // FileCollector is responsible for taking globs and their
@@ -9,12 +20,31 @@ type Collector interface {
 // into actual actionable files and the configs that apply
 // to them
 type FileCollector struct {
+	cfg *config.Config
 }
 
-func NewFileLocator() *FileCollector {
+func NewFileLocator(cfg *config.Config) *FileCollector {
 	return &FileCollector{}
 }
 
-func (f FileCollector) Locate() error {
-	return nil
+func (f FileCollector) Locate() ([]IndividualFile, error) {
+	files := make([]IndividualFile, 0)
+	for _, file := range f.cfg.Files {
+		flattened, err := f.filesFromGlob(file.Glob)
+		if err != nil {
+			return files, err
+		}
+		for _, f := range flattened {
+			files = append(files, IndividualFile{path: f, threshold: file.Threshold})
+		}
+	}
+	// TODO: Handle duplicate paths here; multiple config blocks can overlap
+	// file matches, not sure if we care (yet) as each file will have it's
+	// proper configuration associated with it, we may just read the same file
+	// n times applying a different config, that might be ok!
+	return files, nil
+}
+
+func (f FileCollector) filesFromGlob(glob string) ([]string, error) {
+	return filepath.Glob(glob)
 }

@@ -25,7 +25,6 @@ type FileConfig struct {
 	Glob        string      `yaml:"glob" validate:"required"`
 	Threshold   Threshold   `yaml:"Threshold" validate:"required"`
 	Integration Integration `yaml:"Integration, omitempty"`
-	files       []string
 }
 
 // Threshold encapsulates the configuration for each defined
