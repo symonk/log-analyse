@@ -65,17 +65,24 @@ func NewFileAnalyser(individualFiles []files.IndividualFile, options ...Option) 
 // Analyse performs retrospect log file analysis
 // TODO: doing more than 1 thing
 // TODO: optimise patterns i.e reuse compiled
-func (f *FileAnalyser) Analyse() (<-chan Result, error) {
+func (f *FileAnalyser) Analyse() (<-chan string, error) {
 	loadedFiles, err := f.loader.Load()
 	if err != nil {
 		// TODO: no good!
 		panic(err)
 	}
 
-	results := make(chan Result)
+	results := make(chan string)
+	work := make(chan Task)
+	_ = work
 
 	var wg sync.WaitGroup
 	wg.Add(len(loadedFiles))
+
+	// TODO: spawn the workers etc.
+
+	// shove the loaded files onto the channel for processing
+
 	for _, f := range loadedFiles {
 		go func() {
 			defer wg.Done()
@@ -90,7 +97,7 @@ func (f *FileAnalyser) Analyse() (<-chan Result, error) {
 					}
 					if ok {
 						slog.Info("matched", slog.String("line", line), slog.String("pattern", pattern))
-						results <- Result(line)
+						results <- line
 					}
 				}
 			}
