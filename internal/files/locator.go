@@ -1,11 +1,20 @@
 package files
 
 import (
+	"fmt"
 	"log/slog"
 	"path/filepath"
 
 	"github.com/symonk/log-analyse/internal/config"
 )
+
+type NoFilesFromGlobError struct {
+	glob string
+}
+
+func (n *NoFilesFromGlobError) Error() string {
+	return fmt.Sprintf("pattern %q did not have any files matched", n.glob)
+}
 
 type IndividualFile struct {
 	Path      string
@@ -37,7 +46,7 @@ func (f FileCollector) Locate() ([]IndividualFile, error) {
 		}
 		if len(flattened) == 0 {
 			slog.Warn("no files for glob", "glob", file.Glob)
-			return files, nil
+			return files, &NoFilesFromGlobError{glob: file.Glob}
 		}
 		for _, f := range flattened {
 			files = append(files, IndividualFile{Path: f, Threshold: file.Threshold})
