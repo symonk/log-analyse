@@ -41,7 +41,7 @@ security utility.
 ## Quick start
 
 `log-analyse` by default will look for a configuration file in `~/.loganalyse/loganalyse.yaml`, however you can provide
-an explicit absolute path to a yaml file via the `-c` file.
+an explicit absolute path to a yaml file via the `--config` file.
 
 An example of the current configuration (changing rapidly):
 
@@ -83,7 +83,7 @@ mkdir ~/.loganalyse/loganalyse.yaml
 log-analyse
 ```
 
------
+----
 
 ## Configuring log-analyse
 
