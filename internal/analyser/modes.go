@@ -51,6 +51,8 @@ func sequentialFunc(loadedFile LoadedFile) []string {
 
 // reverseFunc traverses the file from the tail end backwards
 // this is useful for finding later matches quicker.
+//
+//nolint:golint, unused
 func reverseFunc(loadedFile LoadedFile) []string {
 	return nil
 }
@@ -59,6 +61,8 @@ func reverseFunc(loadedFile LoadedFile) []string {
 // into chunks and spawns multiple goroutines responsible for
 // a smaller subset of the file and joins all matches back
 // together.
+//
+//nolint:golint, unused
 func fanOutFunc(loadedFile LoadedFile) []string {
 	return nil
 }
