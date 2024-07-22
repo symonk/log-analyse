@@ -16,6 +16,7 @@ const (
 	FanOut     Strategy = "fanout"
 )
 
+//nolint:golint, unused
 var strategyMap = map[Strategy]func(loadedFile LoadedFile) []string{
 	Sequential: sequentialFunc,
 	Reverse:    reverseFunc,
