@@ -1,9 +1,6 @@
 package analyser
 
 import (
-	"bufio"
-	"log/slog"
-	"regexp"
 	"sync"
 
 	"github.com/symonk/log-analyse/internal/files"
@@ -65,44 +62,32 @@ func NewFileAnalyser(individualFiles []files.IndividualFile, options ...Option) 
 // Analyse performs retrospect log file analysis
 // TODO: doing more than 1 thing
 // TODO: optimise patterns i.e reuse compiled
-func (f *FileAnalyser) Analyse() (<-chan string, error) {
+func (f *FileAnalyser) Analyse() (<-chan []string, error) {
 	loadedFiles, err := f.loader.Load()
+	size := len(loadedFiles)
 	if err != nil {
 		// TODO: no good!
 		panic(err)
 	}
 
-	results := make(chan string)
+	results := make(chan []string)
 	work := make(chan Task)
 	_ = work
 
 	var wg sync.WaitGroup
-	wg.Add(len(loadedFiles))
+	wg.Add(size)
 
-	// TODO: spawn the workers etc.
-
-	// shove the loaded files onto the channel for processing
-
-	for _, f := range loadedFiles {
+	for i := 0; i < size; i++ {
 		go func() {
 			defer wg.Done()
-			defer f.File.Close()
-			scanner := bufio.NewScanner(f.File)
-			for scanner.Scan() {
-				line := scanner.Text()
-				for _, pattern := range f.Threshold.Patterns {
-					ok, err := regexp.Match(pattern, []byte(line))
-					if err != nil {
-						slog.Error("error matching line with pattern", slog.String("line", line), slog.String("pattern", pattern))
-					}
-					if ok {
-						slog.Info("matched", slog.String("line", line), slog.String("pattern", pattern))
-						results <- line
-					}
-				}
-			}
+			worker(i, work, results)
 		}()
 	}
+
+	for _, file := range loadedFiles {
+		work <- func() []string { return seqScanStrategyFn(file) }
+	}
+
 	go func() {
 		wg.Wait()
 		close(results)
