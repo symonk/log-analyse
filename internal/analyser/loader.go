@@ -12,8 +12,8 @@ type Loader interface {
 }
 
 type LoadedFile struct {
-	File      *os.File
-	Threshold config.Options
+	File    *os.File
+	Options config.Options
 }
 
 type FileLoader struct {
@@ -29,7 +29,7 @@ func (f *FileLoader) Load() ([]LoadedFile, error) {
 		if err != nil {
 			return loaded, err
 		}
-		loaded = append(loaded, LoadedFile{File: opened, Threshold: individualFile.Threshold})
+		loaded = append(loaded, LoadedFile{File: opened, Options: individualFile.Threshold})
 	}
 	return loaded, nil
 }
