@@ -1,6 +1,7 @@
 package analyser
 
 import (
+	"log/slog"
 	"sync"
 
 	"github.com/symonk/log-analyse/internal/files"
@@ -65,6 +66,7 @@ func NewFileAnalyser(individualFiles []files.IndividualFile, options ...Option) 
 func (f *FileAnalyser) Analyse() (<-chan []string, error) {
 	loadedFiles, err := f.loader.Load()
 	size := len(loadedFiles)
+	slog.Info("Found files to scan", slog.Int("size", size))
 	if err != nil {
 		// TODO: no good!
 		panic(err)

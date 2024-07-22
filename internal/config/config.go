@@ -23,7 +23,7 @@ func (c Config) Globs() []string {
 // matches before an alert or action is triggered.
 type FileConfig struct {
 	Glob        string      `yaml:"glob" validate:"required"`
-	Options     Options     `yaml:"Threshold" validate:"required"`
+	Options     Options     `yaml:"Options" validate:"required"`
 	Integration Integration `yaml:"Integration, omitempty"`
 }
 

@@ -22,6 +22,9 @@ var analyseCmd = &cobra.Command{
 		if err != nil {
 			slog.Error("unable to parse files", slog.Any("error", err))
 		}
+		for _, path := range flattened {
+			slog.Info("Will scan file", slog.Any("file", path.Path))
+		}
 		fAnalyser := analyser.NewFileAnalyser(flattened, analyser.WithBounds(0))
 		matches, err := fAnalyser.Analyse()
 		if err != nil {

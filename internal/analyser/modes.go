@@ -25,9 +25,11 @@ var strategyMap = map[Strategy]func(loadedFile LoadedFile) []string{
 // sequentialFunc processes a file sequentially
 // using a single thread and reports matches against
 // any of it's patterns
+// TODO: This should put results on a channel, storing the
+// entire file in memory is not going to cut it at scale!
 func sequentialFunc(loadedFile LoadedFile) []string {
 	defer loadedFile.File.Close()
-	lines := make([]string, 0)
+	lines := make([]string, 0, 2048)
 	scanner := bufio.NewScanner(loadedFile.File)
 	patterns, _ := re.CompileSlice(loadedFile.Options.Patterns)
 	for scanner.Scan() {
@@ -39,6 +41,10 @@ func sequentialFunc(loadedFile LoadedFile) []string {
 			}
 		}
 	}
+	if err := scanner.Err(); err != nil {
+		slog.Error("scanning error", slog.Any("error", err))
+	}
+	slog.Info("finished parsing file", slog.String("file", loadedFile.File.Name()))
 	return lines
 }
 
