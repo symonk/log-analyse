@@ -13,5 +13,4 @@ func worker(id int, upstream <-chan Task, downstream chan []string) {
 		slog.Info("worker performing task", slog.Int("id", id))
 		downstream <- task()
 	}
-	close(downstream)
 }

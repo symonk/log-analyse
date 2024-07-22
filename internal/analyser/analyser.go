@@ -74,7 +74,6 @@ func (f *FileAnalyser) Analyse() (<-chan []string, error) {
 
 	results := make(chan []string)
 	work := make(chan Task)
-	_ = work
 
 	var wg sync.WaitGroup
 	wg.Add(size)
@@ -89,6 +88,7 @@ func (f *FileAnalyser) Analyse() (<-chan []string, error) {
 	for _, file := range loadedFiles {
 		work <- func() []string { return sequentialFunc(file) }
 	}
+	close(work)
 
 	go func() {
 		wg.Wait()
