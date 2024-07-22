@@ -56,7 +56,8 @@ files:
       patterns:
         - ".*FATAL.*"
         - ".*payment failed.*"
-      notify: "email"
+      notify: email
+      mode: sequential
   # An explicit log file
   - glob: "~/logs/foo.log"
     threshold:
@@ -65,6 +66,7 @@ files:
     patterns:
       - ".*disk space low.*"
     notify: "slack"
+    mode: reverse
 ```
 
 -----
