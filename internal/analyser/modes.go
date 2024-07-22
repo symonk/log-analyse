@@ -7,14 +7,25 @@ import (
 	"github.com/symonk/log-analyse/internal/re"
 )
 
-var strategyMap = map[string]func(loadedFile LoadedFile) []string{
-	"sequential": seqScanStrategyFn,
+type Strategy string
+
+const (
+	// keys for various strategy functions
+	Sequential Strategy = "sequential"
+	Reverse    Strategy = "reverse"
+	FanOut     Strategy = "fanout"
+)
+
+var strategyMap = map[Strategy]func(loadedFile LoadedFile) []string{
+	Sequential: sequentialFunc,
+	Reverse:    reverseFunc,
+	FanOut:     fanOutFunc,
 }
 
-// seqScanStrategyFn processes a file sequentially
+// sequentialFunc processes a file sequentially
 // using a single thread and reports matches against
 // any of it's patterns
-func seqScanStrategyFn(loadedFile LoadedFile) []string {
+func sequentialFunc(loadedFile LoadedFile) []string {
 	lines := make([]string, 0)
 	scanner := bufio.NewScanner(loadedFile.File)
 	patterns, _ := re.CompileSlice(loadedFile.Options.Patterns)
@@ -28,4 +39,18 @@ func seqScanStrategyFn(loadedFile LoadedFile) []string {
 		}
 	}
 	return lines
+}
+
+// reverseFunc traverses the file from the tail end backwards
+// this is useful for finding later matches quicker.
+func reverseFunc(loadedFile LoadedFile) []string {
+	return nil
+}
+
+// fanOutFunc takes the current lines of the file, splits it
+// into chunks and spawns multiple goroutines responsible for
+// a smaller subset of the file and joins all matches back
+// together.
+func fanOutFunc(loadedFile LoadedFile) []string {
+	return nil
 }

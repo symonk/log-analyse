@@ -85,7 +85,7 @@ func (f *FileAnalyser) Analyse() (<-chan []string, error) {
 	}
 
 	for _, file := range loadedFiles {
-		work <- func() []string { return seqScanStrategyFn(file) }
+		work <- func() []string { return sequentialFunc(file) }
 	}
 
 	go func() {
