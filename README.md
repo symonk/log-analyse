@@ -15,7 +15,7 @@
 
 `log-analyse` allows scanning hundreds of log files for pre-determined pattern matches.
 The aim of `log-analyse` is to allow teams to store an array of patterns that may be
-of interest in an assortment of log files and be notified when various optionss around
+of interest in an assortment of log files and be notified when various options around
 those patterns are met.
 
 `log-analyse` can be leveraged as a tool for basic visibility and alerting, aswell as a
