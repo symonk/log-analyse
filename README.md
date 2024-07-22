@@ -85,3 +85,21 @@ log-analyse
 
 -----
 
+## Configuring log-analyse
+
+Log analyse can be configured on a per `glob` basis.  It is possible with overlapping globs
+that the same file on disk may be traversed, this behaviour is controlled by the `strict`
+flag at the top level and duplicate files can cause an exit during the collection phase.
+
+The config is composed of an array of objects, each of which currently supports the following:
+
+* `glob`: A glob pattern for file collection
+* `options`: An object of object for all files matching the glob  
+  * `hits`: How many matches before alerting.
+  * `period`: Over what period should hits be considered before alerting.
+  * `patterns`: Per line regex patterns for lines of interest.
+  * `notify`: Which notification mechanism to fire for detections.
+  * `mode`: Which strategy/mode to apply when scanning the files.
+
+
+-----
