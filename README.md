@@ -63,10 +63,10 @@ files:
     options:
       hits: 1
       period: 1m
-    patterns:
-      - ".*disk space low.*"
-    notify: "slack"
-    mode: reverse
+      patterns:
+        - ".*disk space low.*"
+      notify: slack
+      mode: reverse
 ```
 
 -----
