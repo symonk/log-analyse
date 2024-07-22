@@ -26,6 +26,7 @@ var strategyMap = map[Strategy]func(loadedFile LoadedFile) []string{
 // using a single thread and reports matches against
 // any of it's patterns
 func sequentialFunc(loadedFile LoadedFile) []string {
+	defer loadedFile.File.Close()
 	lines := make([]string, 0)
 	scanner := bufio.NewScanner(loadedFile.File)
 	patterns, _ := re.CompileSlice(loadedFile.Options.Patterns)
