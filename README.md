@@ -15,7 +15,7 @@
 
 `log-analyse` allows scanning hundreds of log files for pre-determined pattern matches.
 The aim of `log-analyse` is to allow teams to store an array of patterns that may be
-of interest in an assortment of log files and be notified when various thresholds around
+of interest in an assortment of log files and be notified when various optionss around
 those patterns are met.
 
 `log-analyse` can be leveraged as a tool for basic visibility and alerting, aswell as a
@@ -50,7 +50,7 @@ An example of the current configuration (changing rapidly):
 files:
   # A glob based folder lookup
   - glob: "~/logs/*.txt"
-    threshold:
+    options:
       hits: 5
       period: 30s
       patterns:
@@ -60,7 +60,7 @@ files:
       mode: sequential
   # An explicit log file
   - glob: "~/logs/foo.log"
-    threshold:
+    options:
       hits: 1
       period: 1m
     patterns:
@@ -93,8 +93,8 @@ flag at the top level and duplicate files can cause an exit during the collectio
 
 The config is composed of an array of objects, each of which currently supports the following:
 
-* `glob`: A glob pattern for file collection
-* `options`: An object of object for all files matching the glob  
+* `glob`: A glob pattern for file collection.
+* `options`: An object of object for all files matching the glob.
   * `hits`: How many matches before alerting.
   * `period`: Over what period should hits be considered before alerting.
   * `patterns`: Per line regex patterns for lines of interest.

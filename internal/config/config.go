@@ -23,13 +23,13 @@ func (c Config) Globs() []string {
 // matches before an alert or action is triggered.
 type FileConfig struct {
 	Glob        string      `yaml:"glob" validate:"required"`
-	Threshold   Threshold   `yaml:"Threshold" validate:"required"`
+	Options     Options     `yaml:"Threshold" validate:"required"`
 	Integration Integration `yaml:"Integration, omitempty"`
 }
 
-// Threshold encapsulates the configuration for each defined
+// Options encapsulates the configuration for each defined
 // glob pattern in the config
-type Threshold struct {
+type Options struct {
 	Hits     int      `yaml:"hits"`
 	Period   string   `yaml:"period"`
 	Patterns []string `yaml:"patterns"`

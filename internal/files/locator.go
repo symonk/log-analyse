@@ -18,7 +18,7 @@ func (n *NoFilesFromGlobError) Error() string {
 
 type IndividualFile struct {
 	Path      string
-	Threshold config.Threshold
+	Threshold config.Options
 }
 
 type Collector interface {
@@ -49,7 +49,7 @@ func (f FileCollector) Locate() ([]IndividualFile, error) {
 			return files, &NoFilesFromGlobError{glob: file.Glob}
 		}
 		for _, f := range flattened {
-			files = append(files, IndividualFile{Path: f, Threshold: file.Threshold})
+			files = append(files, IndividualFile{Path: f, Threshold: file.Options})
 		}
 	}
 	// TODO: Handle duplicate paths here; multiple config blocks can overlap

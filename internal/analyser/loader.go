@@ -13,7 +13,7 @@ type Loader interface {
 
 type LoadedFile struct {
 	File      *os.File
-	Threshold config.Threshold
+	Threshold config.Options
 }
 
 type FileLoader struct {
