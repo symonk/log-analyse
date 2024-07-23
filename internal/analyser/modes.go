@@ -2,6 +2,7 @@ package analyser
 
 import (
 	"bufio"
+	"fmt"
 	"log/slog"
 
 	"github.com/symonk/log-analyse/internal/re"
@@ -38,7 +39,7 @@ func sequentialFunc(loadedFile LoadedFile) []string {
 			b := scanner.Bytes()
 			if ok := pattern.Match(b); ok {
 				line := string(scanner.Bytes())
-				slog.Info("matched", slog.String("line", line), slog.Any("pattern", pattern))
+				fmt.Println("matched", line)
 				lines = append(lines, line)
 			}
 		}
