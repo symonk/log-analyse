@@ -13,9 +13,11 @@ import (
 	"github.com/symonk/log-analyse/internal/config"
 )
 
-var cfgFile string
-
-var cfg *config.Config
+var (
+	cfgFile string
+	cfg     *config.Config
+	verbose bool
+)
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
@@ -36,6 +38,7 @@ func Execute() {
 func init() {
 	cobra.OnInitialize(initConfig)
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is ~/.loganalyse/loganalyse.yaml)")
+	rootCmd.PersistentFlags().BoolVarP(&verbose, "verbose", "v", false, "display more information to stdout")
 }
 
 // initConfig reads in config file and ENV variables if set.

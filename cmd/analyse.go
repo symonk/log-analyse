@@ -25,16 +25,13 @@ var analyseCmd = &cobra.Command{
 		if profile {
 			f, err := os.Create("la.prof")
 			if err != nil {
-				slog.Error("error creating profile file", slog.Any("error", err))
 				os.Exit(1)
 			}
 			if err := pprof.StartCPUProfile(f); err != nil {
-				slog.Error("error with pprof", slog.Any("error", err))
 				os.Exit(1)
 			}
 			defer func() {
 				pprof.StopCPUProfile()
-				slog.Info("stopped profile")
 			}()
 		}
 		// instantiate something that can locate files on disk
@@ -54,11 +51,6 @@ var analyseCmd = &cobra.Command{
 		for match := range matches {
 			slog.Info("Match", slog.Any("match", match))
 		}
-
-		// TODO: Collect matches for each of the thresholds
-
-		// TODO: live notify as we go or fan in all results
-		// TODO: notify at the end of the run
 	},
 }
 
