@@ -54,9 +54,10 @@ will be supported in the near future:
   * `mode:reverse`: Sequentially monitor a log file from tail to head (reverse).
   * `mode:fan_out`: Have multiple goroutines monitoring the log files.
   * `action:slack`: Dispatch a notification to slack.
-  * `action:teams`: Dispatch a teams notification to slack.
+  * `action:teams`: Dispatch a notification to teams. 
   * `action:cloud_watch`: Publish a metric to cloudwatch.
   * `action:shell`: Invoke a shell script with context args.
+  * `action:print`: Print violations to stdout.
 
 -----
 
