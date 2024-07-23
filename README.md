@@ -58,6 +58,7 @@ files:
         - ".*payment failed.*"
       notify: email
       mode: sequential
+      on_match: count
   # An explicit log file
   - glob: "~/logs/foo.log"
     options:
@@ -67,6 +68,7 @@ files:
         - ".*disk space low.*"
       notify: slack
       mode: reverse
+      on_match: print_line
 ```
 
 -----
@@ -100,6 +102,7 @@ The config is composed of an array of objects, each of which currently supports 
   * `patterns`: Per line regex patterns for lines of interest.
   * `notify`: Which notification mechanism to fire for detections.
   * `mode`: Which strategy/mode to apply when scanning the files.
+  * `on_match`: What to display based on matches.
 
 
 -----

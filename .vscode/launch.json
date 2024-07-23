@@ -12,6 +12,7 @@
             "program": "${workspaceFolder}",
             "args": [
                 "analyse",
+                "-p"
         ]
         }
     ]

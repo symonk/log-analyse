@@ -2,10 +2,17 @@ package cmd
 
 import (
 	"log/slog"
+	"os"
+	"runtime/pprof"
 
 	"github.com/spf13/cobra"
 	"github.com/symonk/log-analyse/internal/analyser"
 	"github.com/symonk/log-analyse/internal/files"
+)
+
+var (
+	profile bool
+	strict  bool
 )
 
 // analyseCmd represents the analyse command
@@ -15,7 +22,21 @@ var analyseCmd = &cobra.Command{
 	Short: "Analyses log fails based on the configuration",
 	Long:  `Implement`,
 	Run: func(cmd *cobra.Command, args []string) {
-		slog.Info("Detected globs", slog.Any("globs", cfg.Globs()))
+		if profile {
+			f, err := os.Create("la.prof")
+			if err != nil {
+				slog.Error("error creating profile file", slog.Any("error", err))
+				os.Exit(1)
+			}
+			if err := pprof.StartCPUProfile(f); err != nil {
+				slog.Error("error with pprof", slog.Any("error", err))
+				os.Exit(1)
+			}
+			defer func() {
+				pprof.StopCPUProfile()
+				slog.Info("stopped profile")
+			}()
+		}
 		// instantiate something that can locate files on disk
 		locator := files.NewFileLocator(cfg)
 		flattened, err := locator.Locate()
@@ -42,6 +63,7 @@ var analyseCmd = &cobra.Command{
 }
 
 func init() {
+	analyseCmd.Flags().BoolVarP(&strict, "strict", "s", false, "if set any log files in the config that do not exist on disk will cause an exit")
+	analyseCmd.Flags().BoolVarP(&profile, "profile", "p", false, "if set enables cpu profiling as a development aid")
 	rootCmd.AddCommand(analyseCmd)
-	analyseCmd.Flags().BoolP("strict", "s", false, "if set any log files in the config that do not exist on disk will cause an exit")
 }

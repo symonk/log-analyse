@@ -55,7 +55,7 @@ build:
 ## run: run the built binary (no args)
 .PHONY: run
 run: build
-	dist/${BINARY_NAME}
+	dist/${BINARY_NAME} analyse
 
 
 # ==================================================================================== #
@@ -66,3 +66,9 @@ run: build
 .PHONY: upgrade
 upgrade:
 	go get -u ./...
+
+## profilecpu: build, run and produce a web CPU profile
+.PHONY profilecpu: build
+	dpkg -l | grep graphviz || sudo apt install graphviz
+	dist/${BINARY_NAME} analyse -p
+	go tool pprof -http=:8080 la.prof
