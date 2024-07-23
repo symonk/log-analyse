@@ -13,6 +13,11 @@
 
 # Log Analyse
 
+`log-analyse` is **not** a tool for basic grepping files at scale.  It is a tool for
+monitoring log files for particular pattern matches and taking actions when those
+cases arise.  These actions can vary and will be eventually be exposed via a hookable
+plugin system.
+
 `log-analyse` allows scanning hundreds of log files for pre-determined pattern matches.
 The aim of `log-analyse` is to allow teams to store an array of patterns that may be
 of interest in an assortment of log files and be notified when various options around
