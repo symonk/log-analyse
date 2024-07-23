@@ -61,7 +61,7 @@ files:
       patterns:
         - ".*FATAL.*"
         - ".*payment failed.*"
-      notify: email
+      action: email
       mode: sequential
       on_match: count
   # An explicit log file
@@ -71,7 +71,7 @@ files:
       period: 1m
       patterns:
         - ".*disk space low.*"
-      notify: slack
+      action: slack
       mode: reverse
       on_match: print_line
 ```
