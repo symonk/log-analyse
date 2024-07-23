@@ -56,7 +56,7 @@ will be supported in the near future:
   * `action:slack`: Dispatch a notification to slack.
   * `action:teams`: Dispatch a notification to teams. 
   * `action:cloud_watch`: Publish a metric to cloudwatch.
-  * `action:shell`: Invoke a shell script with context args.
+  * `action:shell (experimental)`: Invoke a shell script with context args.
   * `action:print`: Print violations to stdout.
 
 -----
