@@ -42,6 +42,24 @@ security utility.
  * highly performant (and configurable) scanning of log files.
  * extensible plugin system to allow user defined behaviour on alerting.
 
+-----
+
+## Actions & Modes
+
+`log-analyse` allows applying both arbitrary `modes` and `actions` on a per
+`glob` basis.  These modes and actions are growing and right now but these
+will be supported in the near future:
+
+  * `mode:sequential`: Sequentially monitor a log file from head to tail.
+  * `mode:reverse`: Sequentially monitor a log file from tail to head (reverse).
+  * `mode:fan_out`: Have multiple goroutines monitoring the log files.
+  * `action:slack`: Dispatch a notification to slack.
+  * `action:teams`: Dispatch a teams notification to slack.
+  * `action:cloud_watch`: Publish a metric to cloudwatch.
+  * `action:shell`: Invoke a shell script with context args.
+
+-----
+
 
 ## Quick start
 
