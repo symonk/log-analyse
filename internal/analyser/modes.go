@@ -31,7 +31,7 @@ var strategyMap = map[Strategy]func(loadedFile LoadedFile) []string{
 // entire file in memory is not going to cut it at scale!
 func sequentialFunc(loadedFile LoadedFile) []string {
 	defer loadedFile.File.Close()
-	lines := make([]string, 0, 64)
+	lines := make([]string, 0, 1024)
 	scanner := bufio.NewScanner(loadedFile.File)
 	patterns, _ := re.CompileSlice(loadedFile.Options.Patterns)
 	for scanner.Scan() {
