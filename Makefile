@@ -71,4 +71,4 @@ upgrade:
 .PHONY profilecpu: build
 	dpkg -l | grep graphviz || sudo apt install graphviz
 	dist/${BINARY_NAME} analyse -p
-	go tool pprof -http=:8080 la.prof
+	go tool pprof -http=:8080 analyse.prof
