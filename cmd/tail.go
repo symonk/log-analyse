@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"fmt"
-	"sync"
 
 	"github.com/spf13/cobra"
 	"github.com/symonk/log-analyse/internal/config"
@@ -40,15 +39,13 @@ var tailCmd = &cobra.Command{
 			return fmt.Errorf("error when resolving glob patterns to files %w", err)
 		}
 		monitor := monitor.Filemon{}
-		var wg sync.WaitGroup
-		wg.Add(len(squashedFiles))
+		done := make(chan struct{})
 		for _, f := range squashedFiles {
 			go func() {
-				defer wg.Done()
-				monitor.Watch(f)
+				monitor.Watch(f, done)
 			}()
 		}
-		wg.Wait()
+		<-done
 		return nil
 	},
 }
