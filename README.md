@@ -72,7 +72,7 @@ An example of the current configuration (changing rapidly):
 ```yaml
 ---
 files:
-  # A glob based folder lookup
+  # Apply to an entire directory
   - glob: "~/logs/*.txt"
     options:
       hits: 5
@@ -82,8 +82,8 @@ files:
         - ".*payment failed.*"
       action: email
       mode: sequential
-      on_match: count
-  # An explicit log file
+      on_match: print_line
+  # Apply to a single file
   - glob: "~/logs/foo.log"
     options:
       hits: 1
