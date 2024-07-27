@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/symonk/log-analyse/internal/files"
+	"github.com/symonk/log-analyse/internal/re"
 )
 
 type Watcher interface {
@@ -36,6 +37,8 @@ func (f *Filemon) Watch(c files.ConfiguredFile) {
 	}
 	defer handle.Close()
 	reader := bufio.NewReader(handle)
+	patterns, _ := re.CompileSlice(c.Threshold.Patterns)
+	strategyFn := strategyFactory[Matches]
 	for {
 		line, err := reader.ReadBytes('\n')
 		if err != nil {
@@ -45,6 +48,11 @@ func (f *Filemon) Watch(c files.ConfiguredFile) {
 			}
 			break
 		}
-		fmt.Println(line)
+		for _, p := range patterns {
+			ok, match := strategyFn(line, p)
+			if ok {
+				fmt.Print(match)
+			}
+		}
 	}
 }
