@@ -3,6 +3,7 @@ package monitor
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 
 	"github.com/fsnotify/fsnotify"
 	"github.com/symonk/log-analyse/internal/files"
@@ -42,7 +43,7 @@ func (f *Filemon) Watch(c files.ConfiguredFile, done chan struct{}) {
 		panic(err)
 	}
 	defer watch.Close()
-	if err := watch.Add("/tmp"); err != nil {
+	if err := watch.Add(filepath.Dir(c.Path)); err != nil {
 		panic(err)
 	}
 	go func() {
