@@ -1,10 +1,9 @@
-package analyser
+package files
 
 import (
 	"os"
 
 	"github.com/symonk/log-analyse/internal/config"
-	"github.com/symonk/log-analyse/internal/files"
 )
 
 type Loader interface {
@@ -17,7 +16,7 @@ type LoadedFile struct {
 }
 
 type FileLoader struct {
-	files []files.IndividualFile
+	files []IndividualFile
 }
 
 // Load opens file paths and returns pointers to real files

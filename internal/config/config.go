@@ -1,5 +1,46 @@
 package config
 
+import (
+	"fmt"
+	"log/slog"
+	"os"
+
+	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
+)
+
+var GlobalConfig *Config
+
+func Get() *Config {
+	return GlobalConfig
+}
+
+// Init Config loads the config into memory
+func Init(configFilePath string) {
+	if configFilePath != "" {
+		viper.SetConfigFile(configFilePath)
+	} else {
+		baseDir, err := defaultConfigPath()
+		cobra.CheckErr(err)
+
+		viper.AddConfigPath(baseDir)
+		viper.SetConfigType("yaml")
+		viper.SetConfigName("log-analyse")
+	}
+
+	if err := viper.ReadInConfig(); err == nil {
+		fmt.Fprintln(os.Stderr, "Using config file:", viper.ConfigFileUsed())
+		if err := viper.Unmarshal(&GlobalConfig); err != nil {
+			slog.Error("configuration file was not valid", slog.String("config", viper.ConfigFileUsed()), slog.Any("error", err))
+			os.Exit(2)
+		}
+	} else {
+		slog.Error("no config file could be found: ", slog.Any("error", err))
+		os.Exit(1)
+	}
+	slog.Info("Successfully built a config")
+}
+
 // Config encapsulates basic configuration used by
 // log-analyse when it runs.  At the moment this is
 // relatively basic, enhanced configurations will be

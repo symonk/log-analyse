@@ -5,7 +5,9 @@ import (
 	"sync"
 
 	"github.com/spf13/cobra"
+	"github.com/symonk/log-analyse/internal/config"
 	"github.com/symonk/log-analyse/internal/files"
+	"github.com/symonk/log-analyse/internal/monitor"
 	"github.com/symonk/log-analyse/internal/prof"
 )
 
@@ -22,15 +24,17 @@ var tailCmd = &cobra.Command{
 		if profile {
 			defer prof.RunProf()()
 		}
+		cfg := config.Get()
 		fileLocator := files.NewFileLocator(cfg)
 		squashedFiles, err := fileLocator.Locate()
 		if err != nil {
 			return fmt.Errorf("error when resolving glob patterns to files %w", err)
 		}
+		monitor := monitor.Filemon{}
 		var wg sync.WaitGroup
 		wg.Add(len(squashedFiles))
 		for _, f := range squashedFiles {
-			fmt.Println(f.Path)
+			monitor.Watch(f.Path)
 		}
 		return nil
 	},

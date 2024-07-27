@@ -11,7 +11,7 @@ import (
 func TestDefaultBaseDirSuccess(t *testing.T) {
 	home, _ := os.UserHomeDir()
 	expected := fmt.Sprintf("%s/%s", home, ".log-analyse")
-	baseDir, err := ConfigDefaultFolder()
+	baseDir, err := defaultConfigPath()
 	assert.Nil(t, err)
 	assert.Equal(t, baseDir, expected)
 }
