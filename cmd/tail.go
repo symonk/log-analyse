@@ -25,6 +25,14 @@ var tailCmd = &cobra.Command{
 		if profile {
 			defer prof.RunProf()()
 		}
+
+		/*
+			Fetch the user config
+			Resolve the glob(s) into files that exist
+			Merge the files that exist from all the globs
+			Register monitors on the file(s) to tail them
+		*/
+
 		cfg := config.Get()
 		fileLocator := files.NewFileLocator(cfg)
 		squashedFiles, err := fileLocator.Locate()
@@ -35,8 +43,12 @@ var tailCmd = &cobra.Command{
 		var wg sync.WaitGroup
 		wg.Add(len(squashedFiles))
 		for _, f := range squashedFiles {
-			monitor.Watch(f.Path)
+			go func() {
+				defer wg.Done()
+				monitor.Watch(f)
+			}()
 		}
+		wg.Wait()
 		return nil
 	},
 }
