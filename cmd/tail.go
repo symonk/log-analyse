@@ -14,13 +14,14 @@ import (
 // tailCmd represents the tail command
 var tailCmd = &cobra.Command{
 	Use:   "tail",
-	Short: "Live tailing of log files",
-	Long:  ``,
+	Short: "tails log files for configured pattern matches",
+	Long: `The tail subcommand is used for live tailing all files
+	matched by the glob patterns defined in the configs.  Each matching
+	file is monitored for corresponding sets of option(s) and an action
+	can be configured on successful matches.
+	
+	See configuration documentation for more.`,
 	RunE: func(cmd *cobra.Command, args []string) error {
-		/*
-			Parse globs into concrete files
-			Flatten the files to remove any duplicates?
-		*/
 		if profile {
 			defer prof.RunProf()()
 		}

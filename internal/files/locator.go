@@ -16,13 +16,13 @@ func (n *NoFilesFromGlobError) Error() string {
 	return fmt.Sprintf("pattern %q did not have any files matched", n.glob)
 }
 
-type IndividualFile struct {
+type ConfiguredFile struct {
 	Path      string
 	Threshold config.Options
 }
 
 type Collector interface {
-	Locate() ([]IndividualFile, error)
+	Locate() ([]ConfiguredFile, error)
 }
 
 // FileCollector is responsible for taking globs and their
@@ -37,8 +37,8 @@ func NewFileLocator(cfg *config.Config) *FileCollector {
 	return &FileCollector{cfg: cfg}
 }
 
-func (f FileCollector) Locate() ([]IndividualFile, error) {
-	files := make([]IndividualFile, 0)
+func (f FileCollector) Locate() ([]ConfiguredFile, error) {
+	files := make([]ConfiguredFile, 0)
 	for _, file := range f.cfg.Files {
 		flattened, err := f.filesFromGlob(file.Glob)
 		if err != nil {
@@ -49,7 +49,7 @@ func (f FileCollector) Locate() ([]IndividualFile, error) {
 			return files, &NoFilesFromGlobError{glob: file.Glob}
 		}
 		for _, f := range flattened {
-			files = append(files, IndividualFile{Path: f, Threshold: file.Options})
+			files = append(files, ConfiguredFile{Path: f, Threshold: file.Options})
 		}
 	}
 	// TODO: Handle duplicate paths here; multiple config blocks can overlap
