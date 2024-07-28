@@ -74,36 +74,28 @@ func TestTopLevelFilesIsRequired(t *testing.T) {
 	b := []byte(``)
 	cfg, err := loadConfigFile(b)
 	assert.Nil(t, err)
-	valErr := cfg.Validate()
+	valErr := Validate(cfg)
 	fmt.Println(valErr)
 	expected := `Key: 'Config.Files' Error:Field validation for 'Files' failed on the 'required' tag`
 	assert.ErrorContains(t, valErr, expected)
 }
 
-func TestFileConfigMustHaveAGlob(t *testing.T) {
+func TestGlobCannotBeEmpty(t *testing.T) {
 	var b = []byte(`
 ---
 files:
   - glob: ""
+  - glob: ""
   `)
 	cfg, err := loadConfigFile(b)
 	assert.Nil(t, err)
-	valErr := cfg.Validate()
-	assert.ErrorIs(t, valErr, nil)
-
-}
-
-func TestOptionsAreRequired(t *testing.T) {
-	var b = []byte(`
----
-files:
-  - glob: "ok.txt"
-    options: 
-  `)
-	cfg, err := loadConfigFile(b)
-	assert.Nil(t, err)
-	valErr := cfg.Validate()
-	assert.ErrorIs(t, valErr, nil)
+	valErr := Validate(cfg)
+	expectedFirst := `Key: 'Config.Files[0].Glob' Error:Field validation for 'Glob' failed on the 'required' tag`
+	expectedSecond := `Key: 'Config.Files[1].Glob' Error:Field validation for 'Glob' failed on the 'required' tag`
+	fmt.Println(valErr)
+	fmt.Println(valErr)
+	assert.ErrorContains(t, valErr, expectedFirst)
+	assert.ErrorContains(t, valErr, expectedSecond)
 
 }
 

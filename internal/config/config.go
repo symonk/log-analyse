@@ -29,10 +29,10 @@ func Init(configFilePath string) error {
 // Config outlines the patterns of files to monitor
 // and various around those files.
 type Config struct {
-	Files []FileConfig `yaml:"files" validate:"required,gt=0"`
+	Files []FileConfig `yaml:"files" validate:"required,dive"`
 }
 
-func (c *Config) Validate() error {
+func Validate(c *Config) error {
 	validate := validator.New(validator.WithRequiredStructEnabled())
 	if err := validate.Struct(c); err != nil {
 		if _, ok := err.(*validator.InvalidValidationError); ok {
@@ -58,15 +58,15 @@ func (c Config) Globs() []string {
 // matches before an alert or action is triggered.
 type FileConfig struct {
 	Glob    string   `yaml:"glob" validate:"required"`
-	Options *Options `yaml:"Options" validate:"required"`
+	Options *Options `yaml:"options"`
 }
 
 // Options encapsulates the configuration for each defined
 // glob pattern in the config
 type Options struct {
-	Active   bool     `yaml:"active" validate:"required"`
-	Hits     int      `yaml:"hits" validate:"required,gt=0"`
+	Active   bool     `yaml:"active"`
+	Hits     int      `yaml:"hits"`
 	Period   string   `yaml:"period"`
-	Patterns []string `yaml:"patterns" validate:"required"`
+	Patterns []string `yaml:"patterns"`
 	Notify   string   `yaml:"notify, omitempty"`
 }
