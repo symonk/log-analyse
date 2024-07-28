@@ -12,7 +12,7 @@ var basic = []byte(`
 ---
 files:
   - glob: "~/logs/*.txt"
-    threshold:
+    options:
       hits: 5
       period: 30s
       patterns:
@@ -21,7 +21,7 @@ files:
       notify: "email"
 
   - glob: "~/logs/foo.log"
-    threshold:
+    options:
       hits: 1
       period: 1m
     patterns:
@@ -34,13 +34,17 @@ var single = []byte(`
 ---
 files:
   - glob: "~/logs/*.txt"
-    threshold:
+    options:
       hits: 5
       period: 30s
       patterns:
         - ".*FATAL.*"
         - ".*payment failed.*"
       notify: "email"
+`)
+
+var empty = []byte(`
+---
 `)
 
 func TestCanUnmarshalConfigSuccessfully(t *testing.T) {
@@ -59,6 +63,44 @@ func TestReturnGlobs(t *testing.T) {
 	fConfigs := []FileConfig{{Glob: "foo"}, {Glob: "bar"}, {Glob: "baz"}}
 	c := Config{Files: fConfigs}
 	assert.Equal(t, c.Globs(), []string{"foo", "bar", "baz"})
+}
+
+func TestCanLoadConfigFromAbsolutePath(t *testing.T) {
+
+}
+
+func TestTopLevelFilesIsRequired(t *testing.T) {
+	cfg, err := loadConfigFile(empty)
+	assert.Nil(t, err)
+	valErr := cfg.Validate()
+	assert.ErrorIs(t, valErr, ErrFilesRequired)
+}
+
+func TestFileConfigMustHaveAGlob(t *testing.T) {
+	var b = []byte(`
+---
+files:
+  - glob: ""
+  `)
+	cfg, err := loadConfigFile(b)
+	assert.Nil(t, err)
+	valErr := cfg.Validate()
+	assert.ErrorIs(t, valErr, ErrGlobRequired)
+
+}
+
+func TestOptionsAreRequired(t *testing.T) {
+	var b = []byte(`
+---
+files:
+  - glob: "ok.txt"
+    options: 
+  `)
+	cfg, err := loadConfigFile(b)
+	assert.Nil(t, err)
+	valErr := cfg.Validate()
+	assert.ErrorIs(t, valErr, ErrOptionsRequired)
+
 }
 
 // loadConfigFile streams a byte slice into a viper config and

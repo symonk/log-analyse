@@ -33,8 +33,14 @@ func Execute() {
 }
 
 func init() {
-	cobra.OnInitialize(func() { config.Init(cfgFile) })
+	cobra.OnInitialize(initializeConfig)
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is ~/.loganalyse/loganalyse.yaml)")
 	rootCmd.PersistentFlags().BoolVarP(&verbose, "verbose", "v", false, "display more information to stdout")
 	rootCmd.PersistentFlags().BoolVarP(&profile, "profile", "p", false, "enable CPU profiler (temporary dev aid)")
+}
+
+func initializeConfig() {
+	if err := config.Init(cfgFile); err != nil {
+		panic(err)
+	}
 }

@@ -52,7 +52,7 @@ func (f FileCollector) Locate() ([]ConfiguredFile, error) {
 			return monitorableFiles, &NoFilesFromGlobError{glob: file.Glob}
 		}
 		for _, f := range flattened {
-			monitorableFiles = append(monitorableFiles, ConfiguredFile{Path: f, Threshold: file.Options})
+			monitorableFiles = append(monitorableFiles, ConfiguredFile{Path: f, Threshold: *file.Options})
 		}
 	}
 	// TODO: Handle duplicate paths here; multiple config blocks can overlap

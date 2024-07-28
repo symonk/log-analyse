@@ -1,6 +1,8 @@
 package config
 
 import (
+	"fmt"
+
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -31,9 +33,12 @@ func Init(configFilePath string) error {
 
 	if err := viper.ReadInConfig(); err == nil {
 		if err := viper.Unmarshal(&GlobalConfig); err != nil {
-			return err
+			return fmt.Errorf("unable to unmarshal config: %w", err)
 		}
 	} else {
+		return fmt.Errorf("no config found: %w", err)
+	}
+	if err := GlobalConfig.Validate(); err != nil {
 		return err
 	}
 	return nil
@@ -43,6 +48,24 @@ func Init(configFilePath string) error {
 // and various around those files.
 type Config struct {
 	Files []FileConfig `yaml:"files"`
+}
+
+// Validates ensures the unmarshalled config is fit
+// for purposes and conforms to an appropriate standard
+// for execution
+func (c *Config) Validate() error {
+	if len(c.Files) == 0 {
+		return ErrFilesRequired
+	}
+	for _, fc := range c.Files {
+		if fc.Glob == "" {
+			return ErrGlobRequired
+		}
+		if fc.Options == nil {
+			return ErrOptionsRequired
+		}
+	}
+	return nil
 }
 
 // Globs returns the configured glob patterns defined in
@@ -58,8 +81,8 @@ func (c Config) Globs() []string {
 // FileConfig encapsualates the threshold for pattern
 // matches before an alert or action is triggered.
 type FileConfig struct {
-	Glob    string  `yaml:"glob" validate:"required"`
-	Options Options `yaml:"Options" validate:"required"`
+	Glob    string   `yaml:"glob"`
+	Options *Options `yaml:"Options"`
 }
 
 // Options encapsulates the configuration for each defined
