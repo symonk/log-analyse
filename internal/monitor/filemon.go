@@ -15,13 +15,8 @@ type Watcher interface {
 	Watch(c files.ConfiguredFile, matches chan string)
 }
 
-type Opener interface {
-	Open(path string) (*os.File, error)
-}
-
 // Filemon is responsible for tailing an arbitrary number of files
 type Filemon struct {
-	opener Opener
 }
 
 func NewFilemon() *Filemon {
