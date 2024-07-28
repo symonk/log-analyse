@@ -12,13 +12,23 @@ const (
 	configName = "log-analyse"
 )
 
+// Validatable is implemented by config types that
+// guarantee required config is in place at runtime
+// as well as handle default cases.
+type Validatable interface {
+	Validate() error
+}
+
 var GlobalConfig *Config
 
 func Get() *Config {
 	return GlobalConfig
 }
 
-// Init Config loads the config into memory
+// Init unmarshals the user provided config data or if omitted
+// looks up the config in the default location.  Init also handles
+// unmarshalling the config through viper into the config object.
+// Additional config validation is finally performed.
 func Init(configFilePath string) error {
 	if configFilePath != "" {
 		viper.SetConfigFile(configFilePath)
@@ -58,12 +68,7 @@ func (c *Config) Validate() error {
 		return ErrFilesRequired
 	}
 	for _, fc := range c.Files {
-		if fc.Glob == "" {
-			return ErrGlobRequired
-		}
-		if fc.Options == nil {
-			return ErrOptionsRequired
-		}
+		return fc.Validate()
 	}
 	return nil
 }
@@ -85,6 +90,16 @@ type FileConfig struct {
 	Options *Options `yaml:"Options"`
 }
 
+func (f *FileConfig) Validate() error {
+	if f.Glob == "" {
+		return ErrGlobRequired
+	}
+	if f.Options == nil {
+		return ErrOptionsRequired
+	}
+	return nil
+}
+
 // Options encapsulates the configuration for each defined
 // glob pattern in the config
 type Options struct {
@@ -93,4 +108,11 @@ type Options struct {
 	Period   string   `yaml:"period"`
 	Patterns []string `yaml:"patterns"`
 	Notify   string   `yaml:"notify, omitempty"`
+}
+
+func (o *Options) Validate() error {
+	if o.Hits <= 0 {
+		return fmt.Errorf("`Option.Hits` must be specified and be greater than 0")
+	}
+	return nil
 }
