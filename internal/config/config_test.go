@@ -2,7 +2,6 @@ package config
 
 import (
 	"bytes"
-	"fmt"
 	"testing"
 
 	"github.com/spf13/viper"
@@ -73,12 +72,9 @@ func TestCanLoadConfigFromAbsolutePath(t *testing.T) {
 
 func TestTopLevelFilesIsRequired(t *testing.T) {
 	b := []byte(``)
-	cfg, err := loadConfigFile(b)
-	assert.Nil(t, err)
-	valErr := Validate(cfg)
-	fmt.Println(valErr)
+	_, err := loadAndValidateConfig(t, b)
 	expected := "Key: 'Config.Files' Error:Field validation for 'Files' failed on the 'required' tag"
-	assert.ErrorContains(t, valErr, expected)
+	assert.ErrorContains(t, err, expected)
 }
 
 func TestGlobCannotBeEmpty(t *testing.T) {
@@ -88,15 +84,11 @@ files:
   - glob: ""
   - glob: ""
   `)
-	cfg, err := loadConfigFile(b)
-	assert.Nil(t, err)
-	valErr := Validate(cfg)
+	_, err := loadAndValidateConfig(t, b)
 	expectedFirst := "Key: 'Config.Files[0].Glob' Error:Field validation for 'Glob' failed on the 'required' tag"
 	expectedSecond := "Key: 'Config.Files[1].Glob' Error:Field validation for 'Glob' failed on the 'required' tag"
-	fmt.Println(valErr)
-	fmt.Println(valErr)
-	assert.ErrorContains(t, valErr, expectedFirst)
-	assert.ErrorContains(t, valErr, expectedSecond)
+	assert.ErrorContains(t, err, expectedFirst)
+	assert.ErrorContains(t, err, expectedSecond)
 }
 
 func TestOptionsAreRequired(t *testing.T) {
@@ -106,11 +98,9 @@ files:
   - glob: "foo.txt"
 
 `)
-	cfg, err := loadConfigFile(b)
-	assert.Nil(t, err)
-	valErr := Validate(cfg)
+	_, err := loadAndValidateConfig(t, b)
 	expected := "Key: 'Config.Files[0].Options' Error:Field validation for 'Options' failed on the 'required' tag"
-	assert.ErrorContains(t, valErr, expected)
+	assert.ErrorContains(t, err, expected)
 }
 
 func TestOptionsHitMustBeSuppliedAndPositiveInt(t *testing.T) {
@@ -121,9 +111,9 @@ files:
     options:
       hits: -1
 `)
-	_, valErr := loadAndValidateConfig(t, b)
+	_, err := loadAndValidateConfig(t, b)
 	expectedNegative := "Key: 'Config.Files[0].Options.Hits' Error:Field validation for 'Hits' failed on the 'gt' tag"
-	assert.ErrorContains(t, valErr, expectedNegative)
+	assert.ErrorContains(t, err, expectedNegative)
 }
 
 func TestPeriodMustBeValidTimeDuration(t *testing.T) {
@@ -135,9 +125,9 @@ files:
       hits: 1
       period: fail
 `)
-	_, valErr := loadAndValidateConfig(t, b)
+	_, err := loadAndValidateConfig(t, b)
 	expected := "Key: 'Config.Files[0].Options.Period' Error:Field validation for 'Period' failed on the 'is-valid-time-duration' tag"
-	assert.ErrorContains(t, valErr, expected)
+	assert.ErrorContains(t, err, expected)
 }
 
 func TestPatternsMustBeProvided(t *testing.T) {
@@ -149,10 +139,9 @@ files:
       hits: 1
       period: 10s
 `)
-	_, valErr := loadAndValidateConfig(t, b)
+	_, err := loadAndValidateConfig(t, b)
 	expected := "Key: 'Config.Files[0].Options.Patterns' Error:Field validation for 'Patterns' failed on the 'required' tag"
-	assert.ErrorContains(t, valErr, expected)
-
+	assert.ErrorContains(t, err, expected)
 }
 
 // loadConfigFile streams a byte slice into a viper config and
