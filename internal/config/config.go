@@ -34,6 +34,7 @@ type Config struct {
 
 func Validate(c *Config) error {
 	validate := validator.New(validator.WithRequiredStructEnabled())
+	validate.RegisterValidation(validDuration, isValidTimeDurationFunc)
 	if err := validate.Struct(c); err != nil {
 		if _, ok := err.(*validator.InvalidValidationError); ok {
 			return err
@@ -66,7 +67,7 @@ type FileConfig struct {
 type Options struct {
 	Active   bool     `yaml:"active"`
 	Hits     int      `yaml:"hits" validate:"gt=0"`
-	Period   string   `yaml:"period"`
-	Patterns []string `yaml:"patterns"`
+	Period   string   `yaml:"period" validate:"is-valid-time-duration"`
+	Patterns []string `yaml:"patterns" validate:"required"`
 	Notify   string   `yaml:"notify, omitempty"`
 }

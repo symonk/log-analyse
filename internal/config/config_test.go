@@ -48,10 +48,11 @@ var empty = []byte(`
 ---
 `)
 
-func TestCanUnmarshalConfigSuccessfully(t *testing.T) {
-	c, err := loadConfigFile(basic)
-	assert.Nil(t, err)
-	assert.Len(t, c.Files, 2)
+func TestCanBuildValidConfig(t *testing.T) {
+	cfg, valErr := loadAndValidateConfig(t, basic)
+	assert.Nil(t, valErr)
+	// TODO: implement proper checking, this is a sizable test!
+	assert.Equal(t, cfg.Files[0].Options.Hits, 5)
 }
 
 func TestCanLoadSingleConfigBlock(t *testing.T) {
@@ -123,6 +124,34 @@ files:
 	_, valErr := loadAndValidateConfig(t, b)
 	expectedNegative := "Key: 'Config.Files[0].Options.Hits' Error:Field validation for 'Hits' failed on the 'gt' tag"
 	assert.ErrorContains(t, valErr, expectedNegative)
+}
+
+func TestPeriodMustBeValidTimeDuration(t *testing.T) {
+	b := []byte(`
+---
+files:
+  - glob: "foo.txt"
+    options:
+      hits: 1
+      period: fail
+`)
+	_, valErr := loadAndValidateConfig(t, b)
+	expected := "Key: 'Config.Files[0].Options.Period' Error:Field validation for 'Period' failed on the 'is-valid-time-duration' tag"
+	assert.ErrorContains(t, valErr, expected)
+}
+
+func TestPatternsMustBeProvided(t *testing.T) {
+	b := []byte(`
+---
+files:
+  - glob: "foo.txt"
+    options:
+      hits: 1
+      period: 10s
+`)
+	_, valErr := loadAndValidateConfig(t, b)
+	expected := "Key: 'Config.Files[0].Options.Patterns' Error:Field validation for 'Patterns' failed on the 'required' tag"
+	assert.ErrorContains(t, valErr, expected)
 
 }
 
