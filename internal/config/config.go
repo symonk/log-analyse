@@ -58,7 +58,7 @@ func (c Config) Globs() []string {
 // matches before an alert or action is triggered.
 type FileConfig struct {
 	Glob    string   `yaml:"glob" validate:"required"`
-	Options *Options `yaml:"options"`
+	Options *Options `yaml:"options" validate:"required"`
 }
 
 // Options encapsulates the configuration for each defined

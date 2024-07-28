@@ -76,12 +76,12 @@ func TestTopLevelFilesIsRequired(t *testing.T) {
 	assert.Nil(t, err)
 	valErr := Validate(cfg)
 	fmt.Println(valErr)
-	expected := `Key: 'Config.Files' Error:Field validation for 'Files' failed on the 'required' tag`
+	expected := "Key: 'Config.Files' Error:Field validation for 'Files' failed on the 'required' tag"
 	assert.ErrorContains(t, valErr, expected)
 }
 
 func TestGlobCannotBeEmpty(t *testing.T) {
-	var b = []byte(`
+	b := []byte(`
 ---
 files:
   - glob: ""
@@ -90,13 +90,26 @@ files:
 	cfg, err := loadConfigFile(b)
 	assert.Nil(t, err)
 	valErr := Validate(cfg)
-	expectedFirst := `Key: 'Config.Files[0].Glob' Error:Field validation for 'Glob' failed on the 'required' tag`
-	expectedSecond := `Key: 'Config.Files[1].Glob' Error:Field validation for 'Glob' failed on the 'required' tag`
+	expectedFirst := "Key: 'Config.Files[0].Glob' Error:Field validation for 'Glob' failed on the 'required' tag"
+	expectedSecond := "Key: 'Config.Files[1].Glob' Error:Field validation for 'Glob' failed on the 'required' tag"
 	fmt.Println(valErr)
 	fmt.Println(valErr)
 	assert.ErrorContains(t, valErr, expectedFirst)
 	assert.ErrorContains(t, valErr, expectedSecond)
+}
 
+func TestOptionsAreRequired(t *testing.T) {
+	b := []byte(`
+---	
+files:
+  - glob: "foo.txt"
+
+`)
+	cfg, err := loadConfigFile(b)
+	assert.Nil(t, err)
+	valErr := Validate(cfg)
+	expected := "Key: 'Config.Files[0].Options' Error:Field validation for 'Options' failed on the 'required' tag"
+	assert.ErrorContains(t, valErr, expected)
 }
 
 // loadConfigFile streams a byte slice into a viper config and
