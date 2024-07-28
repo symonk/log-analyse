@@ -1,9 +1,5 @@
 package config
 
-import (
-	"github.com/go-playground/validator/v10"
-)
-
 const (
 	configType = "yaml"
 	configName = "log-analyse"
@@ -30,21 +26,6 @@ func Init(configFilePath string) error {
 // and various around those files.
 type Config struct {
 	Files []FileConfig `yaml:"files" validate:"required,dive"`
-}
-
-func Validate(c *Config) error {
-	validate := validator.New(validator.WithRequiredStructEnabled())
-	if err := validate.RegisterValidation(validDuration, isValidTimeDurationFunc); err != nil {
-		return err
-	}
-	if err := validate.Struct(c); err != nil {
-		if _, ok := err.(*validator.InvalidValidationError); ok {
-			return err
-		}
-		return err.(validator.ValidationErrors)
-
-	}
-	return nil
 }
 
 // Globs returns the configured glob patterns defined in

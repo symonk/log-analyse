@@ -16,3 +16,18 @@ func isValidTimeDurationFunc(fl validator.FieldLevel) bool {
 	_, err := time.ParseDuration(fl.Field().String())
 	return err == nil
 }
+
+func Validate(c *Config) error {
+	validate := validator.New(validator.WithRequiredStructEnabled())
+	if err := validate.RegisterValidation(validDuration, isValidTimeDurationFunc); err != nil {
+		return err
+	}
+	if err := validate.Struct(c); err != nil {
+		if _, ok := err.(*validator.InvalidValidationError); ok {
+			return err
+		}
+		return err.(validator.ValidationErrors)
+
+	}
+	return nil
+}
