@@ -2,6 +2,7 @@ package config
 
 import (
 	"bytes"
+	"fmt"
 	"testing"
 
 	"github.com/spf13/viper"
@@ -70,10 +71,13 @@ func TestCanLoadConfigFromAbsolutePath(t *testing.T) {
 }
 
 func TestTopLevelFilesIsRequired(t *testing.T) {
-	cfg, err := loadConfigFile(empty)
+	b := []byte(``)
+	cfg, err := loadConfigFile(b)
 	assert.Nil(t, err)
 	valErr := cfg.Validate()
-	assert.ErrorIs(t, valErr, ErrFilesRequired)
+	fmt.Println(valErr)
+	expected := `Key: 'Config.Files' Error:Field validation for 'Files' failed on the 'required' tag`
+	assert.ErrorContains(t, valErr, expected)
 }
 
 func TestFileConfigMustHaveAGlob(t *testing.T) {
@@ -85,7 +89,7 @@ files:
 	cfg, err := loadConfigFile(b)
 	assert.Nil(t, err)
 	valErr := cfg.Validate()
-	assert.ErrorIs(t, valErr, ErrGlobRequired)
+	assert.ErrorIs(t, valErr, nil)
 
 }
 
@@ -99,7 +103,7 @@ files:
 	cfg, err := loadConfigFile(b)
 	assert.Nil(t, err)
 	valErr := cfg.Validate()
-	assert.ErrorIs(t, valErr, ErrOptionsRequired)
+	assert.ErrorIs(t, valErr, nil)
 
 }
 

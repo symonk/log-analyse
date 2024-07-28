@@ -1,20 +1,13 @@
 package config
 
 import (
-	"fmt"
+	"github.com/go-playground/validator/v10"
 )
 
 const (
 	configType = "yaml"
 	configName = "log-analyse"
 )
-
-// Validatable is implemented by config types that
-// guarantee required config is in place at runtime
-// as well as handle default cases.
-type Validatable interface {
-	Validate() error
-}
 
 var GlobalConfig *Config
 
@@ -30,27 +23,23 @@ func Init(configFilePath string) error {
 	if err := parseViper(configFilePath); err != nil {
 		return err
 	}
-	if err := GlobalConfig.Validate(); err != nil {
-		return err
-	}
 	return nil
 }
 
 // Config outlines the patterns of files to monitor
 // and various around those files.
 type Config struct {
-	Files []FileConfig `yaml:"files" validate: "required"`
+	Files []FileConfig `yaml:"files" validate:"required,gt=0"`
 }
 
-// Validates ensures the unmarshalled config is fit
-// for purposes and conforms to an appropriate standard
-// for execution
 func (c *Config) Validate() error {
-	if len(c.Files) == 0 {
-		return ErrFilesRequired
-	}
-	for _, fc := range c.Files {
-		return fc.Validate()
+	validate := validator.New(validator.WithRequiredStructEnabled())
+	if err := validate.Struct(c); err != nil {
+		if _, ok := err.(*validator.InvalidValidationError); ok {
+			return err
+		}
+		return err.(validator.ValidationErrors)
+
 	}
 	return nil
 }
@@ -68,33 +57,16 @@ func (c Config) Globs() []string {
 // FileConfig encapsualates the threshold for pattern
 // matches before an alert or action is triggered.
 type FileConfig struct {
-	Glob    string   `yaml:"glob"`
-	Options *Options `yaml:"Options"`
-}
-
-func (f *FileConfig) Validate() error {
-	if f.Glob == "" {
-		return ErrGlobRequired
-	}
-	if f.Options == nil {
-		return ErrOptionsRequired
-	}
-	return nil
+	Glob    string   `yaml:"glob" validate:"required"`
+	Options *Options `yaml:"Options validate:"required"`
 }
 
 // Options encapsulates the configuration for each defined
 // glob pattern in the config
 type Options struct {
-	Active   bool     `yaml:"active"`
-	Hits     int      `yaml:"hits"`
+	Active   bool     `yaml:"active" validate:"required"`
+	Hits     int      `yaml:"hits" validate:"required,gt=0"`
 	Period   string   `yaml:"period"`
-	Patterns []string `yaml:"patterns"`
+	Patterns []string `yaml:"patterns" validate:"required"`
 	Notify   string   `yaml:"notify, omitempty"`
-}
-
-func (o *Options) Validate() error {
-	if o.Hits <= 0 {
-		return fmt.Errorf("`Option.Hits` must be specified and be greater than 0")
-	}
-	return nil
 }
