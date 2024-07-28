@@ -8,26 +8,26 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-var basic = []byte(`
+var full = []byte(`
 ---
 files:
-  - glob: "~/logs/*.txt"
+  - glob: ~/logs/*.txt
     options:
+      active: false
       hits: 5
       period: 30s
+      notify: email
       patterns:
-        - ".*FATAL.*"
-        - ".*payment failed.*"
-      notify: "email"
-
-  - glob: "~/logs/foo.log"
+        - .*FATAL.*
+        - .*payment failed.*
+  - glob: ~/logs/foo.log
     options:
+      active: true
       hits: 1
-      period: 1m
-    patterns:
-      - ".*disk space low.*"
-    notify: "slack"
-
+      period: 1h10s
+      notify: slack
+      patterns:
+        - .*critical error.*
 `)
 
 var single = []byte(`
@@ -44,10 +44,20 @@ files:
 `)
 
 func TestCanBuildValidConfig(t *testing.T) {
-	cfg, valErr := loadAndValidateConfig(t, basic)
-	assert.Nil(t, valErr)
-	// TODO: implement proper checking, this is a sizable test!
+	cfg, err := loadAndValidateConfig(t, full)
+	assert.Nil(t, err)
+	assert.Equal(t, cfg.Files[0].Glob, "~/logs/*.txt")
+	assert.Equal(t, cfg.Files[1].Glob, "~/logs/foo.log")
+	assert.Equal(t, cfg.Files[0].Options.Active, false)
+	assert.Equal(t, cfg.Files[1].Options.Active, true)
 	assert.Equal(t, cfg.Files[0].Options.Hits, 5)
+	assert.Equal(t, cfg.Files[1].Options.Hits, 1)
+	assert.Equal(t, cfg.Files[0].Options.Period, "30s")
+	assert.Equal(t, cfg.Files[1].Options.Period, "1h10s")
+	assert.Equal(t, cfg.Files[0].Options.Patterns, []string{".*FATAL.*", ".*payment failed.*"})
+	assert.Equal(t, cfg.Files[1].Options.Patterns, []string{".*critical error.*"})
+	assert.Equal(t, cfg.Files[0].Options.Notify, "email")
+	assert.Equal(t, cfg.Files[1].Options.Notify, "slack")
 }
 
 func TestCanLoadSingleConfigBlock(t *testing.T) {
