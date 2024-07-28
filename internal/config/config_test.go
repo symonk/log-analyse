@@ -150,6 +150,39 @@ files:
 	assert.ErrorContains(t, err, expected)
 }
 
+func TestTriggerMustBeInChoices(t *testing.T) {
+	b := []byte(`
+---
+files:
+  - glob: "ok.log"
+    options:
+      hits: 1
+      period: 10s
+      patterns:
+        - ".*ok"
+      trigger: notinlist
+`)
+	_, err := loadAndValidateConfig(t, b)
+	expected := "Key: 'Config.Files[0].Options.Trigger' Error:Field validation for 'Trigger' failed on the"
+	assert.ErrorContains(t, err, expected)
+}
+
+func TestValidTriggerIsOk(t *testing.T) {
+	b := []byte(`
+---
+files:
+  - glob: "ok.log"
+    options:
+      hits: 1
+      period: 10s
+      patterns:
+        - ".*ok"
+      trigger: cloudwatch
+`)
+	_, err := loadAndValidateConfig(t, b)
+	assert.Nil(t, err)
+}
+
 // loadConfigFile streams a byte slice into a viper config and
 // unmarshals it into the Config object.
 func loadConfigFile(b []byte) (*Config, error) {
