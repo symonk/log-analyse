@@ -13,15 +13,9 @@
 
 # Log Analyse
 
-`log-analyse` is **not** a tool for basic grepping files at scale.  It is a tool for
-monitoring log files for particular pattern matches and taking actions when those
-cases arise.  These triggers can vary and will be eventually be exposed via a hookable
-plugin system.
-
-`log-analyse` allows scanning hundreds of log files for pre-determined pattern matches.
-The aim of `log-analyse` is to allow teams to store an array of patterns that may be
-of interest in an assortment of log files and be notified when various options around
-those patterns are met.
+`log-analyse` is a tool for asynchronously monitoring log files for pre defined pattern
+matches and causing a trigger when matches are found based on arbitrary options. It can
+easily monitoring thousands of individual files for `Write` events.
 
 `log-analyse` can be leveraged as a tool for basic visibility and alerting, aswell as a
 security utility.
@@ -37,10 +31,8 @@ security utility.
 `log-analyse` aims to support the following:
 
  * tail mode - live monitoring of log files with rotation support etc.
- * analyse mode - retrospectively analyse log files.
- * notification integrations for alerting.
+ * trigger system for dispatching actions
  * highly performant (and configurable) scanning of log files.
- * extensible plugin system to allow user defined behaviour on alerting.
 
 -----
 
@@ -50,9 +42,6 @@ security utility.
 `glob` basis.  These modes and actions are growing and right now but these
 will be supported in the near future:
 
-  * `mode:sequential`: Sequentially monitor a log file from head to tail.
-  * `mode:reverse`: Sequentially monitor a log file from tail to head (reverse).
-  * `mode:fan_out`: Have multiple goroutines monitoring the log files.
   * `trigger:slack`: Dispatch a notification to slack.
   * `trigger:teams`: Dispatch a notification to teams. 
   * `trigger:cloud_watch`: Publish a metric to cloudwatch.
@@ -72,25 +61,24 @@ An example of the current configuration (changing rapidly):
 ```yaml
 ---
 files:
-  # Apply to an entire directory
-  - glob: "~/logs/*.txt"
+  - glob: ~/logs/*.log
     options:
+      active: false
       hits: 5
       period: 30s
+      notify: email
       patterns:
-        - ".*FATAL.*"
-        - ".*payment failed.*"
-      trigger: email
-      on_match: print_line
-  # Apply to a single file
-  - glob: "~/logs/foo.log"
+        - .*FATAL.*
+        - .*payment failed.*
+
+  - glob: ~/logs/foo.log
     options:
+      active: true
       hits: 1
-      period: 1m
+      period: 1h10s
+      notify: slack
       patterns:
-        - ".*disk space low.*"
-      trigger: slack
-      on_match: print_line
+        - .*critical error.*
 ```
 
 -----

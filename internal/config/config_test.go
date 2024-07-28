@@ -11,7 +11,7 @@ import (
 var full = []byte(`
 ---
 files:
-  - glob: ~/logs/*.txt
+  - glob: ~/logs/*.log
     options:
       active: false
       hits: 5
@@ -46,7 +46,7 @@ files:
 func TestCanBuildValidConfig(t *testing.T) {
 	cfg, err := loadAndValidateConfig(t, full)
 	assert.Nil(t, err)
-	assert.Equal(t, cfg.Files[0].Glob, "~/logs/*.txt")
+	assert.Equal(t, cfg.Files[0].Glob, "~/logs/*.log")
 	assert.Equal(t, cfg.Files[1].Glob, "~/logs/foo.log")
 	assert.Equal(t, cfg.Files[0].Options.Active, false)
 	assert.Equal(t, cfg.Files[1].Options.Active, true)
