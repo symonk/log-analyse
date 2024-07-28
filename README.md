@@ -8,7 +8,7 @@
 
 
 > [!CAUTION]
-> log-analyse is currently in alpha and not fit for production level use.
+> log-analyse is currently in early phase develop and not fit for use
 
 
 # Log Analyse
