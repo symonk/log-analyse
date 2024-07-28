@@ -8,7 +8,7 @@
 
 
 > [!CAUTION]
-> log-analyse is currently in early phase develop and not fit for use
+> log-analyse is currently in early phase development and not fit for use
 
 
 # Log Analyse
