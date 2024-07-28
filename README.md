@@ -81,7 +81,6 @@ files:
         - ".*FATAL.*"
         - ".*payment failed.*"
       action: email
-      mode: sequential
       on_match: print_line
   # Apply to a single file
   - glob: "~/logs/foo.log"
@@ -91,7 +90,6 @@ files:
       patterns:
         - ".*disk space low.*"
       action: slack
-      mode: reverse
       on_match: print_line
 ```
 

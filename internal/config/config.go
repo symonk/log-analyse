@@ -75,7 +75,6 @@ type Options struct {
 	Hits     int      `yaml:"hits"`
 	Period   string   `yaml:"period"`
 	Patterns []string `yaml:"patterns"`
-	Mode     string   `yaml:"mode"`
 	Notify   string   `yaml:"notify, omitempty"`
 }
 
