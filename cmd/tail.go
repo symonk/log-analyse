@@ -40,10 +40,14 @@ var tailCmd = &cobra.Command{
 		}
 		monitor := monitor.Filemon{}
 		done := make(chan struct{})
+		matches := make(chan string)
 		for _, f := range squashedFiles {
 			go func() {
-				monitor.Watch(f, done)
+				monitor.Watch(f, done, matches)
 			}()
+		}
+		for m := range matches {
+			fmt.Println(m)
 		}
 		<-done
 		return nil

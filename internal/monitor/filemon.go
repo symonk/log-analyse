@@ -1,17 +1,18 @@
 package monitor
 
 import (
+	"bufio"
 	"fmt"
+	"io"
 	"os"
-	"path/filepath"
+	"time"
 
-	"github.com/fsnotify/fsnotify"
 	"github.com/symonk/log-analyse/internal/files"
 	"github.com/symonk/log-analyse/internal/re"
 )
 
 type Watcher interface {
-	Watch(c files.ConfiguredFile)
+	Watch(c files.ConfiguredFile, matches chan string)
 }
 
 type Opener interface {
@@ -28,41 +29,42 @@ func NewFilemon() *Filemon {
 }
 
 // This is a hack right now. wip!
-func (f *Filemon) Watch(c files.ConfiguredFile, done chan struct{}) {
+func (f *Filemon) Watch(c files.ConfiguredFile, done chan struct{}, matches chan string) {
 	handle, err := os.Open(c.Path)
 	if err != nil {
 		// TODO: implement some solution
 		panic(err)
 	}
-	defer handle.Close()
 	patterns, _ := re.CompileSlice(c.Threshold.Patterns)
 	strategyFn := strategyFactory[Matches]
-	_, _ = patterns, strategyFn
-	watch, err := fsnotify.NewWatcher()
-	if err != nil {
-		panic(err)
-	}
-	defer watch.Close()
-	if err := watch.Add(filepath.Dir(c.Path)); err != nil {
-		panic(err)
-	}
+	reader := bufio.NewReader(handle)
+	fmt.Println("monitoring: ", c.Path)
 	go func() {
+		defer handle.Close()
 		for {
 			select {
 			case <-done:
 				return
-			case event, ok := <-watch.Events:
-				if !ok {
-					return
+			default:
+				line, err := reader.ReadBytes('\n')
+				if err != nil {
+					if err == io.EOF {
+						time.Sleep(time.Second)
+						continue
+					}
+					// no bytes read maybe, various other errors
+					fmt.Println(err)
+					break
 				}
-				fmt.Println(event, ok)
-			case err, ok := <-watch.Errors:
-				if !ok {
-					return
+				for _, p := range patterns {
+					ok, match := strategyFn(line, p)
+					if ok {
+						matches <- fmt.Sprintf("match in file %s: %s", c.Path, match)
+					}
 				}
-				fmt.Println(err, ok)
+
 			}
 		}
-
 	}()
+
 }
