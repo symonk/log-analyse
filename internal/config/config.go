@@ -57,7 +57,7 @@ func Init(configFilePath string) error {
 // Config outlines the patterns of files to monitor
 // and various around those files.
 type Config struct {
-	Files []FileConfig `yaml:"files"`
+	Files []FileConfig `yaml:"files" validate: "required"`
 }
 
 // Validates ensures the unmarshalled config is fit
