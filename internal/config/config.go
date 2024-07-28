@@ -34,7 +34,9 @@ type Config struct {
 
 func Validate(c *Config) error {
 	validate := validator.New(validator.WithRequiredStructEnabled())
-	validate.RegisterValidation(validDuration, isValidTimeDurationFunc)
+	if err := validate.RegisterValidation(validDuration, isValidTimeDurationFunc); err != nil {
+		return err
+	}
 	if err := validate.Struct(c); err != nil {
 		if _, ok := err.(*validator.InvalidValidationError); ok {
 			return err
@@ -69,5 +71,6 @@ type Options struct {
 	Hits     int      `yaml:"hits" validate:"gt=0"`
 	Period   string   `yaml:"period" validate:"is-valid-time-duration"`
 	Patterns []string `yaml:"patterns" validate:"required"`
+	Trigger  string   `yaml:"trigger, omitempty"`
 	Notify   string   `yaml:"notify, omitempty"`
 }

@@ -43,10 +43,6 @@ files:
       notify: "email"
 `)
 
-var empty = []byte(`
----
-`)
-
 func TestCanBuildValidConfig(t *testing.T) {
 	cfg, valErr := loadAndValidateConfig(t, basic)
 	assert.Nil(t, valErr)
