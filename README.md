@@ -64,7 +64,7 @@ files:
       active: false
       hits: 5
       period: 30s
-      notify: email
+      trigger: email
       patterns:
         - .*FATAL.*
         - .*payment failed.*
@@ -74,7 +74,7 @@ files:
       active: true
       hits: 1
       period: 1h10s
-      notify: slack
+      trigger: slack
       patterns:
         - .*critical error.*
 ```
