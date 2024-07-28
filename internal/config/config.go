@@ -46,8 +46,7 @@ func Init(configFilePath string) {
 // relatively basic, enhanced configurations will be
 // enabled in future.
 type Config struct {
-	Files        []FileConfig  `yaml:"files"`
-	Integrations []Integration `yaml:"integrations, omitempty"`
+	Files []FileConfig `yaml:"files"`
 }
 
 // Globs returns the configured glob patterns defined in
@@ -63,9 +62,8 @@ func (c Config) Globs() []string {
 // FileConfig encapsualates the threshold for pattern
 // matches before an alert or action is triggered.
 type FileConfig struct {
-	Glob        string      `yaml:"glob" validate:"required"`
-	Options     Options     `yaml:"Options" validate:"required"`
-	Integration Integration `yaml:"Integration, omitempty"`
+	Glob    string  `yaml:"glob" validate:"required"`
+	Options Options `yaml:"Options" validate:"required"`
 }
 
 // Options encapsulates the configuration for each defined
@@ -78,9 +76,9 @@ type Options struct {
 	Notify   string   `yaml:"notify, omitempty"`
 }
 
-// Integration is an implementation of an alerting
+// Plugin is an implementation of an alerting
 // mechanism
-type Integration struct {
+type Plugin struct {
 	Slack Slack `yaml:"slack, omitempty"`
 	Email Email `yaml:"email, omitempty"`
 }

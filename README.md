@@ -15,7 +15,7 @@
 
 `log-analyse` is **not** a tool for basic grepping files at scale.  It is a tool for
 monitoring log files for particular pattern matches and taking actions when those
-cases arise.  These actions can vary and will be eventually be exposed via a hookable
+cases arise.  These triggers can vary and will be eventually be exposed via a hookable
 plugin system.
 
 `log-analyse` allows scanning hundreds of log files for pre-determined pattern matches.
@@ -53,11 +53,11 @@ will be supported in the near future:
   * `mode:sequential`: Sequentially monitor a log file from head to tail.
   * `mode:reverse`: Sequentially monitor a log file from tail to head (reverse).
   * `mode:fan_out`: Have multiple goroutines monitoring the log files.
-  * `action:slack`: Dispatch a notification to slack.
-  * `action:teams`: Dispatch a notification to teams. 
-  * `action:cloud_watch`: Publish a metric to cloudwatch.
-  * `action:shell (experimental)`: Invoke a shell script with context args.
-  * `action:print`: Print violations to stdout.
+  * `trigger:slack`: Dispatch a notification to slack.
+  * `trigger:teams`: Dispatch a notification to teams. 
+  * `trigger:cloud_watch`: Publish a metric to cloudwatch.
+  * `trigger:shell (experimental)`: Invoke a shell script with context args.
+  * `trigger:print`: Print violations to stdout.
 
 -----
 
@@ -80,7 +80,7 @@ files:
       patterns:
         - ".*FATAL.*"
         - ".*payment failed.*"
-      action: email
+      trigger: email
       on_match: print_line
   # Apply to a single file
   - glob: "~/logs/foo.log"
@@ -89,7 +89,7 @@ files:
       period: 1m
       patterns:
         - ".*disk space low.*"
-      action: slack
+      trigger: slack
       on_match: print_line
 ```
 
