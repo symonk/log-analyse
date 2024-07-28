@@ -65,7 +65,7 @@ type FileConfig struct {
 // glob pattern in the config
 type Options struct {
 	Active   bool     `yaml:"active"`
-	Hits     int      `yaml:"hits"`
+	Hits     int      `yaml:"hits" validate:"gt=0"`
 	Period   string   `yaml:"period"`
 	Patterns []string `yaml:"patterns"`
 	Notify   string   `yaml:"notify, omitempty"`

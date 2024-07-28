@@ -112,6 +112,20 @@ files:
 	assert.ErrorContains(t, valErr, expected)
 }
 
+func TestOptionsHitMustBeSuppliedAndPositiveInt(t *testing.T) {
+	b := []byte(`
+---
+files:
+  - glob: "foo.txt"
+    options:
+      hits: -1
+`)
+	_, valErr := loadAndValidateConfig(t, b)
+	expectedNegative := "Key: 'Config.Files[0].Options.Hits' Error:Field validation for 'Hits' failed on the 'gt' tag"
+	assert.ErrorContains(t, valErr, expectedNegative)
+
+}
+
 // loadConfigFile streams a byte slice into a viper config and
 // unmarshals it into the Config object.
 func loadConfigFile(b []byte) (*Config, error) {
@@ -124,4 +138,18 @@ func loadConfigFile(b []byte) (*Config, error) {
 		return c, err
 	}
 	return c, nil
+}
+
+// loadAndValidateConfig unmarshals the byte stream through viper
+// and into a config object, also applying validator validation
+// against the input.
+// Any validation errors are returned to the caller
+func loadAndValidateConfig(t *testing.T, b []byte) (*Config, error) {
+	cfg, err := loadConfigFile(b)
+	if err != nil {
+		t.Error(err)
+	}
+	valErr := Validate(cfg)
+	return cfg, valErr
+
 }
