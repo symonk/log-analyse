@@ -1,12 +1,13 @@
 package config
 
 import (
-	"fmt"
-	"log/slog"
-	"os"
-
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+)
+
+const (
+	configType = "yaml"
+	configName = "log-analyse"
 )
 
 var GlobalConfig *Config
@@ -16,7 +17,7 @@ func Get() *Config {
 }
 
 // Init Config loads the config into memory
-func Init(configFilePath string) {
+func Init(configFilePath string) error {
 	if configFilePath != "" {
 		viper.SetConfigFile(configFilePath)
 	} else {
@@ -24,27 +25,22 @@ func Init(configFilePath string) {
 		cobra.CheckErr(err)
 
 		viper.AddConfigPath(baseDir)
-		viper.SetConfigType("yaml")
-		viper.SetConfigName("log-analyse")
+		viper.SetConfigType(configType)
+		viper.SetConfigName(configName)
 	}
 
 	if err := viper.ReadInConfig(); err == nil {
-		fmt.Fprintln(os.Stderr, "Using config file:", viper.ConfigFileUsed())
 		if err := viper.Unmarshal(&GlobalConfig); err != nil {
-			slog.Error("configuration file was not valid", slog.String("config", viper.ConfigFileUsed()), slog.Any("error", err))
-			os.Exit(2)
+			return err
 		}
 	} else {
-		slog.Error("no config file could be found: ", slog.Any("error", err))
-		os.Exit(1)
+		return err
 	}
-	slog.Info("Successfully built a config")
+	return nil
 }
 
-// Config encapsulates basic configuration used by
-// log-analyse when it runs.  At the moment this is
-// relatively basic, enhanced configurations will be
-// enabled in future.
+// Config outlines the patterns of files to monitor
+// and various around those files.
 type Config struct {
 	Files []FileConfig `yaml:"files"`
 }
@@ -74,23 +70,4 @@ type Options struct {
 	Period   string   `yaml:"period"`
 	Patterns []string `yaml:"patterns"`
 	Notify   string   `yaml:"notify, omitempty"`
-}
-
-// Plugin is an implementation of an alerting
-// mechanism
-type Plugin struct {
-	Slack Slack `yaml:"slack, omitempty"`
-	Email Email `yaml:"email, omitempty"`
-}
-
-// Slack encapsulates configurations for the slack
-// notification plugin
-type Slack struct {
-	Webhook string `yaml:"webhook"`
-}
-
-// Email encapsulates configurations for the email
-// notification plugin
-type Email struct {
-	To []string `yaml:"to"`
 }
