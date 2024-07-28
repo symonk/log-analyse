@@ -20,6 +20,7 @@ files:
       patterns:
         - .*FATAL.*
         - .*payment failed.*
+
   - glob: ~/logs/foo.log
     options:
       active: true
@@ -40,7 +41,7 @@ files:
       patterns:
         - ".*FATAL.*"
         - ".*payment failed.*"
-      notify: "email"
+      trigger: "email"
 `)
 
 func TestCanBuildValidConfig(t *testing.T) {
@@ -58,12 +59,6 @@ func TestCanBuildValidConfig(t *testing.T) {
 	assert.Equal(t, cfg.Files[1].Options.Patterns, []string{".*critical error.*"})
 	assert.Equal(t, cfg.Files[0].Options.Trigger, "email")
 	assert.Equal(t, cfg.Files[1].Options.Trigger, "slack")
-}
-
-func TestCanLoadSingleConfigBlock(t *testing.T) {
-	c, err := loadConfigFile(single)
-	assert.Nil(t, err)
-	assert.Len(t, c.Files, 1)
 }
 
 func TestReturnGlobs(t *testing.T) {

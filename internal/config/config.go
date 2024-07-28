@@ -52,5 +52,5 @@ type Options struct {
 	Hits     int      `yaml:"hits" validate:"gt=0"`
 	Period   string   `yaml:"period" validate:"is-valid-time-duration"`
 	Patterns []string `yaml:"patterns" validate:"required"`
-	Trigger  string   `yaml:"trigger, omitempty" validate:"eq=slack|eq=teams|eq=cloudwatch|eq=shell|eq=print"`
+	Trigger  string   `yaml:"trigger, omitempty" validate:"omitempty,eq=email|eq=slack|eq=teams|eq=cloudwatch|eq=shell|eq=print"`
 }
