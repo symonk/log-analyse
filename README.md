@@ -113,8 +113,3 @@ The config is composed of an array of objects, each of which currently supports 
 
 
 -----
-
-## Benchmarks
-
-`log-analyse` aims in the first pass to perform faster than `grep` with all the extra functionality baked in.
-more information on benchmarks will follow later.
