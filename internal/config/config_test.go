@@ -31,19 +31,6 @@ files:
         - .*critical error.*
 `)
 
-var single = []byte(`
----
-files:
-  - glob: "~/logs/*.txt"
-    options:
-      hits: 5
-      period: 30s
-      patterns:
-        - ".*FATAL.*"
-        - ".*payment failed.*"
-      trigger: "email"
-`)
-
 func TestCanBuildValidConfig(t *testing.T) {
 	cfg, err := loadAndValidateConfig(t, full)
 	assert.Nil(t, err)
