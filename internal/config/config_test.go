@@ -16,7 +16,7 @@ files:
       active: false
       hits: 5
       period: 30s
-      notify: email
+      trigger: email
       patterns:
         - .*FATAL.*
         - .*payment failed.*
@@ -25,7 +25,7 @@ files:
       active: true
       hits: 1
       period: 1h10s
-      notify: slack
+      trigger: slack
       patterns:
         - .*critical error.*
 `)
@@ -56,8 +56,8 @@ func TestCanBuildValidConfig(t *testing.T) {
 	assert.Equal(t, cfg.Files[1].Options.Period, "1h10s")
 	assert.Equal(t, cfg.Files[0].Options.Patterns, []string{".*FATAL.*", ".*payment failed.*"})
 	assert.Equal(t, cfg.Files[1].Options.Patterns, []string{".*critical error.*"})
-	assert.Equal(t, cfg.Files[0].Options.Notify, "email")
-	assert.Equal(t, cfg.Files[1].Options.Notify, "slack")
+	assert.Equal(t, cfg.Files[0].Options.Trigger, "email")
+	assert.Equal(t, cfg.Files[1].Options.Trigger, "slack")
 }
 
 func TestCanLoadSingleConfigBlock(t *testing.T) {

@@ -36,11 +36,9 @@ security utility.
 
 -----
 
-## Actions & Modes
+## Triggers
 
-`log-analyse` allows applying both arbitrary `modes` and `actions` on a per
-`glob` basis.  These modes and actions are growing and right now but these
-will be supported in the near future:
+for now `log-analyse` allows the following (basic) triggers:
 
   * `trigger:slack`: Dispatch a notification to slack.
   * `trigger:teams`: Dispatch a notification to teams. 
@@ -107,12 +105,11 @@ The config is composed of an array of objects, each of which currently supports 
 
 * `glob`: A glob pattern for file collection.
 * `options`: An object of object for all files matching the glob.
+  * `active`: If the glob is enabled and should be monitored.
   * `hits`: How many matches before alerting.
   * `period`: Over what period should hits be considered before alerting.
   * `patterns`: Per line regex patterns for lines of interest.
-  * `notify`: Which notification mechanism to fire for detections.
-  * `mode`: Which strategy/mode to apply when scanning the files.
-  * `on_match`: What to display based on matches.
+  * `trigger`: Which notification mechanism to fire for detections.
 
 
 -----

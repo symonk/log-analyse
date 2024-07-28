@@ -53,5 +53,4 @@ type Options struct {
 	Period   string   `yaml:"period" validate:"is-valid-time-duration"`
 	Patterns []string `yaml:"patterns" validate:"required"`
 	Trigger  string   `yaml:"trigger, omitempty"`
-	Notify   string   `yaml:"notify, omitempty"`
 }
